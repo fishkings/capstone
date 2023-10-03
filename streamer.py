@@ -13,7 +13,7 @@ class Streamer :
         #(OpenCl 지원 유무 확인)
         if cv2.ocl.haveOpenCL() :  # GPU 가속 활성화 
             cv2.ocl.setUseOpenCL(True) # 지원되면 활성화 
-        print('[wandlab] ', 'OpenCL : ', cv2.ocl.haveOpenCL())
+        print( 'OpenCL : ', cv2.ocl.haveOpenCL())
             
         self.capture = None
         self.thread = None
@@ -60,7 +60,6 @@ class Streamer :
     def update(self):
                     
         while True:
-            time.sleep(.5)  # 일부러 fps를 떨어트림
             if self.started :  # 비디오 스트리밍 시작될때 
                 (grabbed, frame) = self.capture.read()  
                 # grabbed는 프레임 캡처 여부(True or False)

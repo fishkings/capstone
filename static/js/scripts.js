@@ -26,7 +26,7 @@ window.addEventListener('DOMContentLoaded', event => {
         new bootstrap.ScrollSpy(document.body, {
             target: '#mainNav',
             rootMargin: '0px 0px -40%',
-        });s
+        });
     };
 
     // Collapse responsive navbar when toggler is visible
