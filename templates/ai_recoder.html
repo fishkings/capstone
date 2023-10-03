@@ -26,13 +26,12 @@
 
 
     <script type="text/javascript">
+
         // 타이머 함수 
         let startTime = 0;
         let timerInterval;
         let elapsedTime = 0;
         let pauseTime = 0;
-
-
 
         function startTimer() {
             if (!timerInterval) { // 타이머가 실행 중인지 확인
@@ -101,6 +100,7 @@
         });
 
 
+        //  AJAX
         $(document).ready(function () {
             $('#startButton').click(function () {
                 setInterval(ajaxcall, 5000); // 시간을 줄이면 일시정지 시간 반영 잘 안됨
@@ -225,9 +225,6 @@
                                 <!-- jpg 형식으로 인코딩해서 img 요소 써야 함 -->
                                 <img id="videoFeed" src="{{ url_for('video_feed') }}" width="320" height="320">
                             </a>
-
-
-
                             <div class="portfolio-caption">
                                 <div class="portfolio-caption-heading">상태 감지 중</div>
                                 <div id="state" class="portfolio-caption-subheading text-muted"></div>
