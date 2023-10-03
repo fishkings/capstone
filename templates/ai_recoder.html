@@ -24,26 +24,102 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
+
     <script type="text/javascript">
+        // 타이머 함수 
+        let startTime = 0;
+        let timerInterval;
+        let elapsedTime = 0;
+        let pauseTime = 0;
+
+
+
+        function startTimer() {
+            if (!timerInterval) { // 타이머가 실행 중인지 확인
+                if (pauseTime != 0) {
+                    startTime = Date.now() - pauseTime;
+                    pauseTime = 0;
+                } else {
+                    startTime = Date.now();
+                }
+                timerInterval = setInterval(updateTimer, 10); // 타이머 간격을 밀리초 단위로 설정 (10ms)
+            }
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            pauseTime = Date.now() - startTime; // 일시정지한 시점의 경과시간 저장
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            elapsedTime = 0;
+            document.getElementById("timer").textContent = "00:00:00:00";
+        }
+
+        function updateTimer() {
+            let currentTime = Date.now();
+            elapsedTime = currentTime - startTime;
+
+            let totalSecondsElapsed = Math.floor(elapsedTime / 1000);
+
+            let hours = Math.floor(totalSecondsElapsed / 3600);
+            totalSecondsElapsed %= 3600;
+
+            let minutes = Math.floor(totalSecondsElapsed / 60);
+
+            let seconds = totalSecondsElapsed % 60;
+
+            let milliseconds = elapsedTime % 1000;
+
+            hours = padZero(hours);
+            minutes = padZero(minutes);
+            seconds = padZero(seconds);
+            milliseconds = padZero(milliseconds, true);
+
+            document.getElementById("timer").textContent =
+                hours + ":" + minutes + ":" + seconds + ":" + milliseconds;
+        }
+
+        function padZero(num, isMilliseconds) {
+            if (isMilliseconds) {
+                return num.toString().padStart(3, "0");
+            }
+
+            return num.toString().padStart(2, "0");
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("startButton").addEventListener("click", startTimer);
+            document.getElementById("pauseButton").addEventListener("click", pauseTimer);
+            document.getElementById("resetButton").addEventListener("click", function () {
+                pauseTimer();   // 타이머 일시정지
+                resetTimer();
+            }) // 타이머 초기화})
+        });
+
+
         $(document).ready(function () {
-            setInterval(ajaxcall, 1000); // 10000ms마다 ajaxcall 함수가 실행됩니다.
-        })
+            $('#startButton').click(function () {
+                setInterval(ajaxcall, 5000); // 시간을 줄이면 일시정지 시간 반영 잘 안됨
+            });
+        });
+
 
         function ajaxcall() {
             $.ajax({
                 url: '/update',
                 type: 'GET',
                 success: function (response) {
-                    $('#state').html(response.state)
-                    if (response.pause) {
-                        $('#pauseButton').click();
+                    $('#state').html(response.state_act)
+                    if (response.state_time) {
+                        startTimer()
                     } else {
-                        $('#startButton').click();
+                        pauseTimer()
                     }
                 },
-                error: function (error) {
-                    console.log(error);
-                }
             });
         }
     </script>
@@ -176,76 +252,7 @@
             </div>
     </div>
     <!-- Timer -->
-    <script>
-        let startTime = 0;
-        let timerInterval;
-        let elapsedTime = 0;
 
-        function startTimer() {
-            if (!timerInterval) { // 타이머가 실행 중인지 확인
-                if (startTime === undefined) {
-                    startTime = Date.now(); // 처음 시작할 때만 startTime 설정
-                } else {
-                    startTime = Date.now() - elapsedTime;
-                }
-                timerInterval = setInterval(updateTimer, 10); // 타이머 간격을 밀리초 단위로 설정 (10ms)
-            }
-        }
-
-        function pauseTimer() {
-            clearInterval(timerInterval);
-            timerInterval = null;
-            elapsedTime = Date.now() - startTime;
-        }
-
-        function resetTimer() {
-            clearInterval(timerInterval);
-            timerInterval = null;
-            elapsedTime = 0;
-            document.getElementById("timer").textContent = "00:00:00:00";
-        }
-
-        function updateTimer() {
-            let currentTime = Date.now();
-            elapsedTime = currentTime - startTime;
-
-            let totalSecondsElapsed = Math.floor(elapsedTime / 1000);
-
-            let hours = Math.floor(totalSecondsElapsed / 3600);
-            totalSecondsElapsed %= 3600;
-
-            let minutes = Math.floor(totalSecondsElapsed / 60);
-
-            let seconds = totalSecondsElapsed % 60;
-
-            let milliseconds = elapsedTime % 1000;
-
-            hours = padZero(hours);
-            minutes = padZero(minutes);
-            seconds = padZero(seconds);
-            milliseconds = padZero(milliseconds, true);
-
-            document.getElementById("timer").textContent =
-                hours + ":" + minutes + ":" + seconds + ":" + milliseconds;
-        }
-
-        function padZero(num, isMilliseconds) {
-            if (isMilliseconds) {
-                return num.toString().padStart(3, "0");
-            }
-
-            return num.toString().padStart(2, "0");
-        }
-
-        document.addEventListener("DOMContentLoaded", function () {
-            document.getElementById("startButton").addEventListener("click", startTimer);
-            document.getElementById("pauseButton").addEventListener("click", pauseTimer);
-            document.getElementById("resetButton").addEventListener("click", function () {
-                pauseTimer();   // 타이머 일시정지
-                resetTimer();
-            }) // 타이머 초기화})
-        });
-    </script>
 
     </section>
 

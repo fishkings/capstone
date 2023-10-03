@@ -15,7 +15,7 @@ import time
 from streamer import Streamer
 
 print(os.getcwd())
-model = load_model("model.h5") # 경로에 한글 없어야 함   **********경로 수정*************
+model = load_model("model.h5") # 경로에 한글 없어야 함  
 
 print(model.summary())
 
@@ -56,6 +56,9 @@ def stream_gen( src ):
                 if class1 > class0 :
                     cum_count +=1
                     print(cum_count)
+                # ****************************************************************
+                # 딴 짓이 연속적으로 누적되면 AJAX로 신호 보내고 아니면 다시 초기화
+                # ****************************************************************
 
             frame = streamer.bytescode()[1].tobytes()   # 이거는 필요함 
             
@@ -81,12 +84,12 @@ def ai_recoder():
 def update():
     state = ""
     if cum_count%5 ==0 : 
-        state = "딴짓 중"
-        pause = 1
+        state_act = "딴짓 중"
+        state_time = 0
     else : 
-        state = "공부 중"
-        pause = 0
-    return jsonify({'state': state,'pause':pause})
+        state_act = "공부 중"
+        state_time = 1
+    return jsonify({'state_act': state_act,'state_time':state_time})
 
 
 @application.route('/stream')
