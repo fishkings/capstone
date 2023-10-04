@@ -150,5 +150,6 @@ if __name__ == '__main__':
 # url/recode 만들기 
 # 여러명이 접속했을때 카메라 
 # @app.route('/test/method/<id>')   -> 카메라 개개인 배치
-# def method_test(id):
+# def method_test(id):  -> 이런 방법 시도해보기
+# Readme 수정 / 모델 설계도 추가
 # ****************************************************************
