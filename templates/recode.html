@@ -162,18 +162,7 @@
                         </a>
                         <div class="portfolio-caption">
                             <div class="portfolio-caption-heading">전체 기록 시간</div>
-                            <div class="portfolio-caption-subheading text-muted">a hours</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-sm-6 mb-4">
-                    <div class="portfolio-item">
-                        <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal2">
-                            <div class="img-fluid"></div>
-                        </a>
-                        <div class="portfolio-caption">
-                            <div class="portfolio-caption-heading">딴짓 기록 시간</div>
-                            <div class="portfolio-caption-subheading text-muted">b hours</div>
+                            <div class="portfolio-caption-subheading text-muted">{{differenceTime}}</div>
                         </div>
                     </div>
                 </div>
@@ -184,10 +173,22 @@
                         </a>
                         <div class="portfolio-caption">
                             <div class="portfolio-caption-heading">학습 기록 시간</div>
-                            <div class="portfolio-caption-subheading text-muted">c hours</div>
+                            <div class="portfolio-caption-subheading text-muted">{{study_timer}}</div>
                         </div>
                     </div>
                 </div>
+                <div class="col-lg-4 col-sm-6 mb-4">
+                    <div class="portfolio-item">
+                        <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal2">
+                            <div class="img-fluid"></div>
+                        </a>
+                        <div class="portfolio-caption">
+                            <div class="portfolio-caption-heading">딴짓 기록 시간</div>
+                            <div class="portfolio-caption-subheading text-muted">{{playingTime}}</div>
+                        </div>
+                    </div>
+                </div>
+                
             </div>
     </section>
 

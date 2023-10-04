@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request,jsonify
 from flask import redirect, url_for,Response
 from flask import stream_with_context
-from flask_socketio import SocketIO
 
 import cv2
 import numpy as np
@@ -20,7 +19,6 @@ model = load_model("model.h5") # 경로에 한글 없어야 함
 print(model.summary())
 
 application = Flask(__name__)
-socketio = SocketIO(application)
 streamer = Streamer()
 
 
@@ -35,9 +33,9 @@ def preprocess(frame_test):
     return frame_test_reshaped
 
 
+# 카메라 처리 
 cum_count = 0
 def stream_gen( src ):   
-  
     try :    
         streamer.run( src )   
         counter = 0  # 실행 횟수 
@@ -70,21 +68,54 @@ def stream_gen( src ):
         print( 'disconnected stream' )
         streamer.stop()
 
+# 시간 계산
+def calculateTime(time ):
+        second = int(np.floor(time/1000))
+        minute = int(np.floor(second/60))
+        hour = int(np.floor(minute/60))
+        second %= 60
+        minute %= 60
+        return f"{hour}시간 {minute}분 {second}초 "
 
+# 기본
 @application.route('/')
 def index():
     return render_template('index.html')
 
-@application.route('/ai_recoder')
+
+# ai_recoder 관련 GET,POST
+study_timer = None
+playingTime = None
+differenceTime = None
+@application.route('/ai_recoder', methods=['GET','POST'])
 def ai_recoder():
+    global study_timer
+    global differenceTime
+    global  playingTime
+    
+    if request.method == 'POST':
+        data = request.get_json()
+        study_timer = data['study_timer'] # 공부 시간 (실제 타이머 시간)
+        firstclock = data["firstclock"]
+        lastclock = data["lastclock"]
+        differenceTime = lastclock - firstclock  # 처음 시작 누른 시점 시간 - 처음 종료 누른 시점 시간
+        playingTime =  differenceTime -study_timer # 총 시간 - 공부 시간
+        
+        print("순 공부시간 : ",calculateTime(study_timer))
+        print("딴 짓 시간 : ",calculateTime(playingTime))
+        print("전체 공부시간 : ",calculateTime(differenceTime))
     return render_template('ai_recoder.html')
 
 @application.route('/recode')
 def recode():
-    return render_template('recode.html')
+    return render_template('recode.html',
+                           study_timer=calculateTime(study_timer),
+                           playingTime=calculateTime(playingTime),
+                           differenceTime=calculateTime(differenceTime))
 
 # 이렇게도 가능...
-@application.route('//update_stream')
+# 상태 업데이트
+@application.route('/update_stream')
 def update():
     state = ""
     if cum_count%5 ==0 : 
@@ -96,6 +127,7 @@ def update():
     return jsonify({'state_act': state_act,'state_time':state_time})
 
 
+# 실시간 스트리밍
 @application.route('/stream')
 def video_feed(): 
     src = request.args.get( 'src', default = 0, type = int )
@@ -106,8 +138,7 @@ def video_feed():
                         # stream_with_context() 함수는 제너레이터가 생성한 데이터를 받아
                         # 적절한 형식으로 Resoponse에 전달
                         )
-    except Exception as e :
-        
+    except Exception as e : 
         print('stream error : ',str(e))
         
 
@@ -115,5 +146,9 @@ if __name__ == '__main__':
     application.run(debug=True) #host='0.0.0.0', port=8001  서버배포 
 
 
+# ****************************************************************
 # url/recode 만들기 
 # 여러명이 접속했을때 카메라 
+# @app.route('/test/method/<id>')   -> 카메라 개개인 배치
+# def method_test(id):
+# ****************************************************************
