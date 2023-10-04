@@ -79,8 +79,12 @@ def index():
 def ai_recoder():
     return render_template('ai_recoder.html')
 
-# 이렇게도 가능... ㅅㅍ
-@application.route('/update')
+@application.route('/recode')
+def recode():
+    return render_template('recode.html')
+
+# 이렇게도 가능...
+@application.route('//update_stream')
 def update():
     state = ""
     if cum_count%5 ==0 : 

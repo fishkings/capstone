@@ -110,7 +110,7 @@
 
         function ajaxcall() {
             $.ajax({
-                url: '/update',
+                url: '/update_stream',
                 type: 'GET',
                 success: function (response) {
                     $('#state').html(response.state_act)
@@ -240,7 +240,7 @@
                             <h1 id="timer">00:00:00:00</h1>
                             <div class="button">
                                 <button id="startButton">시작</button>
-                                <button id="resetButton">종료</button>
+                                <a href="/recode"><button id="resetButton">종료</button></a>
                                 <button id="pauseButton" class="styled-button">일시정지</button>
                             </div>
                         </div>
