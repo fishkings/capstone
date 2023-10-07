@@ -2,6 +2,13 @@ from flask import Flask, render_template, request,jsonify
 from flask import redirect, url_for,Response
 from flask import stream_with_context
 
+import sqlalchemy
+from sqlalchemy import create_engine, or_
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column,Integer,String
+from sqlalchemy.orm import sessionmaker
+import uuid
+
 import cv2
 import numpy as np
 import tensorflow
@@ -10,18 +17,42 @@ from tensorflow import keras
 from tensorflow.keras.models import load_model
 import os
 import time
+from time import strftime
+from time import localtime
+from datetime import datetime
 
 from streamer import Streamer
 
-print(os.getcwd())
-model = load_model("model.h5") # 경로에 한글 없어야 함  
 
+# ****************************************************************
+# //변수 선언//
+model = load_model("model.h5") # 경로에 한글 없어야 함  
 print(model.summary())
 
+engine = create_engine(r'sqlite:///database.db',echo=False)
 application = Flask(__name__)
 streamer = Streamer()
 
+Session = sessionmaker(bind=engine)
+session = Session()
 
+Base = declarative_base()
+
+# 데이터 클래스 생성
+class timeTable(Base):
+    __tablename__ = 'studyTable'
+    id = Column(String, primary_key =True, default=uuid.uuid4().hex)  #고유성 제약 조건 (동일한 키 안됨)
+    start_time = Column(String)
+    end_time = Column(String)  
+    date = Column(String)
+    playing_time = Column(Integer)
+    studying_time = Column(Integer)
+    total_time = Column(Integer)
+timeTable.__table__.create(bind=engine, checkfirst=True)
+
+
+# ****************************************************************
+# //함수//
 # 전처리
 def preprocess(frame_test):
     frame_test = np.array(frame_test) # 배열을 numpy 형태로  
@@ -32,6 +63,9 @@ def preprocess(frame_test):
     frame_test_reshaped = np.expand_dims(frame_test_rgb, axis=0) # 배치 차원 생성
     return frame_test_reshaped
 
+# timestamp 처리 
+def strtime(timestamp):
+    return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M')
 
 # 카메라 처리 
 cum_count = 0
@@ -68,50 +102,105 @@ def stream_gen( src ):
         print( 'disconnected stream' )
         streamer.stop()
 
-# 시간 계산
-def calculateTime(time ):
-        second = int(np.floor(time/1000))
+# 시간 계산 문자 출력
+def calculateTime(timestamp):
+        second = int(np.floor(timestamp/1000))
         minute = int(np.floor(second/60))
         hour = int(np.floor(minute/60))
         second %= 60
         minute %= 60
         return f"{hour}시간 {minute}분 {second}초 "
 
+# 시간 '분' 기준으로 변경
+def calculateTimetoMinute(timestamp):
+    second = int(np.floor(timestamp/1000))
+    minute = int(np.floor(second/60))
+    second %= 60
+    return float((f"{minute}.{second}"))
+# ****************************************************************
+
+
+# ****************************************************************
+# //rout//
 # 기본
 @application.route('/')
 def index():
     return render_template('index.html')
 
-
 # ai_recoder 관련 GET,POST
-study_timer = None
-playingTime = None
-differenceTime = None
+studying_time, playing_time, total_time, firstclock, lastclock = None, None, None, None, None
+
+
 @application.route('/ai_recoder', methods=['GET','POST'])
 def ai_recoder():
-    global study_timer
-    global differenceTime
-    global  playingTime
+    global studying_time
+    global total_time
+    global playing_time
+    global firstclock
+    global lastclock
     
     if request.method == 'POST':
         data = request.get_json()
-        study_timer = data['study_timer'] # 공부 시간 (실제 타이머 시간)
+        studying_time = data['studying_time'] # 공부 시간 (실제 타이머 시간)
         firstclock = data["firstclock"]
         lastclock = data["lastclock"]
-        differenceTime = lastclock - firstclock  # 처음 시작 누른 시점 시간 - 처음 종료 누른 시점 시간
-        playingTime =  differenceTime -study_timer # 총 시간 - 공부 시간
+        total_time = lastclock - firstclock  # 처음 시작 누른 시점 시간 - 처음 종료 누른 시점 시간
+        playing_time =  total_time -studying_time # 총 시간 - 공부 시간
         
-        print("순 공부시간 : ",calculateTime(study_timer))
-        print("딴 짓 시간 : ",calculateTime(playingTime))
-        print("전체 공부시간 : ",calculateTime(differenceTime))
+        print(lastclock, firstclock)
+        print("순 공부시간 : ",calculateTime(studying_time))
+        print("딴 짓 시간 : ",calculateTime(playing_time))
+        print("전체 공부시간 : ",calculateTime(total_time))
     return render_template('ai_recoder.html')
 
 @application.route('/recode')
 def recode():
     return render_template('recode.html',
-                           study_timer=calculateTime(study_timer),
-                           playingTime=calculateTime(playingTime),
-                           differenceTime=calculateTime(differenceTime))
+                           studying_time=calculateTime(studying_time),
+                           playing_time=calculateTime(playing_time),
+                           total_time=calculateTime(total_time))
+
+# 차트 기록
+@application.route('/recode_chart',methods=['GET','POST'])
+def recode_chart():
+    global studying_time
+    global total_time
+    global playing_time
+
+    start_time = strtime(firstclock/1000)
+    end_time = strtime(lastclock/1000)
+    studying_time = calculateTimetoMinute(studying_time)
+    playing_time = calculateTimetoMinute(playing_time)
+    total_time = studying_time + playing_time
+
+    print (studying_time,playing_time,total_time)
+    # date = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d') 
+    
+    datasets = [
+        {'label' : end_time , # 임시로 end_time 설정
+         'playing_time' : playing_time,
+         'studying_time' : studying_time,
+         'total_time' : total_time}
+    ]    
+    talbe_list = timeTable(id=str(uuid.uuid4().hex),
+                            start_time=start_time,
+                            end_time=end_time,
+                            studying_time=studying_time,
+                            playing_time=playing_time,
+                            total_time=total_time)
+    print(playing_time,studying_time)
+    
+    session.add(talbe_list)  # session.add_all([])  -> 이렇게도 가능
+    session.commit()
+    
+    result = session.query(timeTable).all()
+    for row in result:
+        print(f"\n시작시간: {row.start_time} | 종료 시간: {row.end_time} \
+        \n 총 시간 : {row.total_time} | 공부 시간 : {row.studying_time} | 딴짓 시간 : {row.playing_time}")
+
+
+    return render_template('recode_chart.html',
+                              datasets = datasets)
 
 # 이렇게도 가능...
 # 상태 업데이트
@@ -125,7 +214,6 @@ def update():
         state_act = "공부 중"
         state_time = 1
     return jsonify({'state_act': state_act,'state_time':state_time})
-
 
 # 실시간 스트리밍
 @application.route('/stream')
@@ -141,7 +229,6 @@ def video_feed():
     except Exception as e : 
         print('stream error : ',str(e))
         
-
 if __name__ == '__main__':
     application.run(debug=True) #host='0.0.0.0', port=8001  서버배포 
 
