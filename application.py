@@ -172,8 +172,6 @@ def recode_chart():
     studying_time = calculateTimetoMinute(studying_time)
     playing_time = calculateTimetoMinute(playing_time)
     total_time = studying_time + playing_time
-
-    print (studying_time,playing_time,total_time)
     # date = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d') 
     
     datasets = [
@@ -188,7 +186,6 @@ def recode_chart():
                             studying_time=studying_time,
                             playing_time=playing_time,
                             total_time=total_time)
-    print(playing_time,studying_time)
     
     session.add(talbe_list)  # session.add_all([])  -> 이렇게도 가능
     session.commit()

@@ -39,6 +39,56 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   </head>
 
+  <script type="text/javascript">
+            // 차트 초기화
+        let ctx = document.getElementById('myChart').getContext('2d');
+        // flask로 받은 데이터
+        let datasets = {{ datasets | tojson | safe }};
+
+        let labels = datasets.map(dataset => dataset.label); // 데이터  매핑
+        let playing_times = datasets.map(dataset => dataset.playing_time);
+        let studying_times = datasets.map(dataset => dataset.studying_time);
+        let total_time = datasets.map(dataset => dataset.total_time);
+
+        time_table = [playing_times[0],studying_times[0],total_time[0]]
+        labels = labels[0]
+
+          datasets = [
+            {
+                label: 'playing_times',
+                data: time_table[0],
+                backgroundColor: 'rgba(255,0 ,0 ,0.5)'
+            },
+            {
+                label: 'studying_times',
+                data: time_table[1],
+                backgroundColor: 'rgba(0 ,255 ,0 ,0.5)'
+            },
+            {
+                label: 'total_time',
+                data: time_table[2],
+                backgroundColor: 'rgba(0 ,0 ,255 ,0.5)'
+            }
+        ];
+
+        let slicedLabels = labels.slice(-7);
+
+
+        let myChart = new Chart(ctx,{
+            type:'bar',
+            data:{
+              labels: slicedLabels,
+              datasets
+          }
+        });
+      </script>
+
+  <style>
+    .page-section{
+      padding: 0px;
+    }
+  </style>
+
   <body id="page-top">
     <!-- Navigation-->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
@@ -64,23 +114,38 @@
             <li class="nav-item">
               <a class="nav-link" href="/#services">Guide</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/ai_recoder">AI Recode</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/recode">Recode</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="recode_chart">Chart</a>
+            </li>
           </ul>
         </div>
       </div>
     </nav>
 
-    {% for dataset in datasets %}
-    <p>*******************</p>
-    <p>*******************</p>
-    <p>*******************</p>
-    <p>*******************</p>
-    <p>*******************</p>
-    <p>*******************</p>
+    <div class="page-section-timer">
+      <section class="page-section bg-light" id="portfolio">
+          <div class="container">
+              <div class="text-center">
+                  <h2 class="section-heading text-uppercase">Study Visualization</h2>
+                  <h3 class="section-subheading text-muted">최근 7일간 공부량을 보여줍니다.</h3>
+                  <canvas id="myChart"></canvas>
+                  {% for dataset in datasets %}
+                  <p>Label: {{ dataset.label }}</p>
+                  <p>Playing Time: {{ dataset.playing_time }}</p>
+                  <p>Studying Time: {{ dataset.studying_time }}</p>
+                  <p>Total Time: {{ dataset.total_time }}</p>
+                  {% endfor %}
+                </body>
+              </div>
+              
+          </div>
+  </div>
 
-    <p>Label: {{ dataset.label }}</p>
-    <p>Playing Time: {{ dataset.playing_time }}</p>
-    <p>Studying Time: {{ dataset.studying_time }}</p>
-    <p>Total Time: {{ dataset.total_time }}</p>
-    {% endfor %}
-  </body>
+   
 </html>

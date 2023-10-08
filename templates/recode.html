@@ -31,7 +31,7 @@
 <style>
     .col-lg-4.col-sm-6.mb-4 {
         padding: 1px;
-        width: 30%;
+        width: 33.3%;
     }
 
     .img-fluid {
@@ -112,6 +112,12 @@
         font-family: "Roboto Slab", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     }
 
+    .button{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+     }
+
     @media (max-width: 775px) {
 
         /* 775px 이하일 때의 */
@@ -123,8 +129,6 @@
             padding: 10px;
             width: 100%;
         }
-
-
     }
 </style>
 
@@ -144,6 +148,9 @@
                 <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
                     <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="/#services">Guide</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/ai_recoder">AI Recode</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/recode">Recode</a></li>
+                    <li class="nav-item"><a class="nav-link" href="recode_chart">Chart</a></li>
                 </ul>
             </div>
         </div>
@@ -188,6 +195,11 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="button">
+                    <a href="/recode_chart"><button id="saves">저장하기</button></a>
+                </div>
+                
                 
             </div>
     </section>
