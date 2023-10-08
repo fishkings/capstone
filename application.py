@@ -130,7 +130,6 @@ def index():
 # ai_recoder 관련 GET,POST
 studying_time, playing_time, total_time, firstclock, lastclock = None, None, None, None, None
 
-
 @application.route('/ai_recoder', methods=['GET','POST'])
 def ai_recoder():
     global studying_time
@@ -171,15 +170,9 @@ def recode_chart():
     end_time = strtime(lastclock/1000)
     studying_time = calculateTimetoMinute(studying_time)
     playing_time = calculateTimetoMinute(playing_time)
-    total_time = studying_time + playing_time
+    total_time = calculateTimetoMinute(total_time)
     # date = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d') 
-    
-    datasets = [
-        {'label' : end_time , # 임시로 end_time 설정
-         'playing_time' : playing_time,
-         'studying_time' : studying_time,
-         'total_time' : total_time}
-    ]    
+   
     talbe_list = timeTable(id=str(uuid.uuid4().hex),
                             start_time=start_time,
                             end_time=end_time,
@@ -189,12 +182,26 @@ def recode_chart():
     
     session.add(talbe_list)  # session.add_all([])  -> 이렇게도 가능
     session.commit()
-    
-    result = session.query(timeTable).all()
-    for row in result:
-        print(f"\n시작시간: {row.start_time} | 종료 시간: {row.end_time} \
-        \n 총 시간 : {row.total_time} | 공부 시간 : {row.studying_time} | 딴짓 시간 : {row.playing_time}")
 
+    studying_time = [x for x in session.query(timeTable.studying_time).all()]
+    playing_time = [x for x in session.query(timeTable.playing_time).all()]
+    total_time = [x for x in session.query(timeTable.total_time).all()]
+    date = [x for x in session.query(timeTable.end_time).all()]
+    origin_datasets = {'data' : [studying_time,playing_time,total_time,date]} 
+
+
+    playing_time = [origin_dataset[0] for origin_dataset in origin_datasets['data'][0]]
+    studying_time = [origin_dataset[0] for origin_dataset in origin_datasets['data'][1]]
+    total_time = [origin_dataset[0] for origin_dataset in origin_datasets['data'][2]]
+    date = [origin_dataset[0] for origin_dataset in origin_datasets['data'][3]]
+
+    datasets = [
+        {'label' : date , # 임시로 end_time 설정
+         'playing_time' : playing_time,
+         'studying_time' : studying_time,
+         'total_time' : total_time}
+    ]    
+    print(datasets)
 
     return render_template('recode_chart.html',
                               datasets = datasets)
@@ -231,9 +238,10 @@ if __name__ == '__main__':
 
 
 # ****************************************************************
-# url/recode 만들기 
 # 여러명이 접속했을때 카메라 
 # @app.route('/test/method/<id>')   -> 카메라 개개인 배치
 # def method_test(id):  -> 이런 방법 시도해보기
 # Readme 수정 / 모델 설계도 추가
+# 시작 안누르고 바로 종료하면 에러
+# 코드 정리리
 # ****************************************************************
