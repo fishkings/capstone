@@ -112,11 +112,11 @@ def calculateTime(timestamp):
         return f"{hour}시간 {minute}분 {second}초 "
 
 # 시간 '분' 기준으로 변경
-def calculateTimetoMinute(timestamp):
+def timestamp_to_minutes(timestamp):
     second = int(np.floor(timestamp/1000))
     minute = int(np.floor(second/60))
     second %= 60
-    return float((f"{minute}.{second}"))
+    return np.around(float((f"{minute}.{second}")),2)
 # ****************************************************************
 
 
@@ -168,9 +168,9 @@ def recode_chart():
 
     start_time = strtime(firstclock/1000)
     end_time = strtime(lastclock/1000)
-    studying_time = calculateTimetoMinute(studying_time)
-    playing_time = calculateTimetoMinute(playing_time)
-    total_time = calculateTimetoMinute(total_time)
+    studying_time = timestamp_to_minutes(studying_time)
+    playing_time = timestamp_to_minutes(playing_time)
+    total_time = timestamp_to_minutes(total_time)
     # date = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d') 
    
     talbe_list = timeTable(id=str(uuid.uuid4().hex),
@@ -201,7 +201,6 @@ def recode_chart():
          'studying_time' : studying_time,
          'total_time' : total_time}
     ]    
-    print(datasets)
 
     return render_template('recode_chart.html',
                               datasets = datasets)
@@ -242,6 +241,7 @@ if __name__ == '__main__':
 # @app.route('/test/method/<id>')   -> 카메라 개개인 배치
 # def method_test(id):  -> 이런 방법 시도해보기
 # Readme 수정 / 모델 설계도 추가
-# 시작 안누르고 바로 종료하면 에러
-# 코드 정리리
+# 시작 안누르고 바로 종료하면 에러 and 바로 차트 들어가면 에러 -> try 문 쓰기
+# 코드 정리 ( 함수는 동사로 시작하게 (함수는 한가지 기능만 수행하도록)/
+# 
 # ****************************************************************

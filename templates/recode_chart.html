@@ -130,6 +130,19 @@
                   data:{
                     labels: slicedLabels,
                     datasets
+                },
+                options: {
+                  plugins: {
+                      tooltip: {
+                      callbacks: {
+                          label: function(context) {
+                          let label = context.dataset.label || '';
+                          label += " : "+ context.parsed.y + "분";
+                          return label;
+                          }
+                      }
+                      }
+                  }
                 }
               });
             </script>
