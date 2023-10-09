@@ -53,8 +53,8 @@ timeTable.__table__.create(bind=engine, checkfirst=True)
 
 # ****************************************************************
 # //함수//
-# 전처리
-def preprocess(frame_test):
+# 이미지 전처리
+def preprocess_image(frame_test):
     frame_test = np.array(frame_test) # 배열을 numpy 형태로  
     dim = int(np.sqrt(len(frame_test))) # 정사각형 형태의 2차원 이미지 크기 결정
     frame_test = frame_test[:dim*dim].reshape((dim, dim))
@@ -62,10 +62,6 @@ def preprocess(frame_test):
     frame_test_rgb = cv2.cvtColor(frame_test, cv2.COLOR_GRAY2RGB) # 색상 공간 변환
     frame_test_reshaped = np.expand_dims(frame_test_rgb, axis=0) # 배치 차원 생성
     return frame_test_reshaped
-
-# timestamp 처리 
-def strtime(timestamp):
-    return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M')
 
 # 카메라 처리 
 cum_count = 0
@@ -80,7 +76,7 @@ def stream_gen( src ):
             # 시간 간격을 두고 모델 예측   
             if counter % interval == 0:
                 frame_test = streamer.bytescode()[1]
-                frame_test_reshaped = preprocess(frame_test)
+                frame_test_reshaped = preprocess_image(frame_test)
                 class0 = model.predict(frame_test_reshaped)[0][0]
                 class1 = model.predict(frame_test_reshaped)[0][1] # 우선 딴 짓으로 생각
                 print(class0, class1)
@@ -102,8 +98,12 @@ def stream_gen( src ):
         print( 'disconnected stream' )
         streamer.stop()
 
-# 시간 계산 문자 출력
-def calculateTime(timestamp):
+# timestamp 처리 
+def format_timestamp(timestamp):
+    return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M')
+
+# timestamp를 시간으로 나타내어 문자 출력
+def format_time_string(timestamp):
         second = int(np.floor(timestamp/1000))
         minute = int(np.floor(second/60))
         hour = int(np.floor(minute/60))
@@ -111,53 +111,54 @@ def calculateTime(timestamp):
         minute %= 60
         return f"{hour}시간 {minute}분 {second}초 "
 
-# 시간 '분' 기준으로 변경
+# timestamp를 '분' 기준으로 변경
 def timestamp_to_minutes(timestamp):
     second = int(np.floor(timestamp/1000))
     minute = int(np.floor(second/60))
     second %= 60
-    return np.around(float((f"{minute}.{second}")),2)
+    return float(f"{minute}.{second:02}")
 # ****************************************************************
 
 
 # ****************************************************************
-# //rout//
+# //route//
 # 기본
 @application.route('/')
 def index():
     return render_template('index.html')
 
 # ai_recoder 관련 GET,POST
-studying_time, playing_time, total_time, firstclock, lastclock = None, None, None, None, None
+studying_time, playing_time, total_time, initial_timestamp, end_timestamp = None, None, None, None, None
 
 @application.route('/ai_recoder', methods=['GET','POST'])
 def ai_recoder():
     global studying_time
     global total_time
     global playing_time
-    global firstclock
-    global lastclock
+    global initial_timestamp  
+    global end_timestamp
     
     if request.method == 'POST':
         data = request.get_json()
         studying_time = data['studying_time'] # 공부 시간 (실제 타이머 시간)
-        firstclock = data["firstclock"]
-        lastclock = data["lastclock"]
-        total_time = lastclock - firstclock  # 처음 시작 누른 시점 시간 - 처음 종료 누른 시점 시간
+        initial_timestamp = data["initial_timestamp"]
+        end_timestamp = data["end_timestamp"]
+        total_time = end_timestamp - initial_timestamp  # 처음 시작 누른 시점 시간 - 처음 종료 누른 시점 시간
         playing_time =  total_time -studying_time # 총 시간 - 공부 시간
         
-        print(lastclock, firstclock)
-        print("순 공부시간 : ",calculateTime(studying_time))
-        print("딴 짓 시간 : ",calculateTime(playing_time))
-        print("전체 공부시간 : ",calculateTime(total_time))
+        print("****************************************************************")
+        print(studying_time,end_timestamp, initial_timestamp)
+        print("순 공부시간 : ",format_time_string(studying_time))
+        print("딴 짓 시간 : ",format_time_string(playing_time))
+        print("전체 공부시간 : ",format_time_string(total_time))
     return render_template('ai_recoder.html')
 
 @application.route('/recode')
 def recode():
     return render_template('recode.html',
-                           studying_time=calculateTime(studying_time),
-                           playing_time=calculateTime(playing_time),
-                           total_time=calculateTime(total_time))
+                           studying_time=format_time_string(studying_time),
+                           playing_time=format_time_string(playing_time),
+                           total_time=format_time_string(total_time))
 
 # 차트 기록
 @application.route('/recode_chart',methods=['GET','POST'])
@@ -166,12 +167,14 @@ def recode_chart():
     global total_time
     global playing_time
 
-    start_time = strtime(firstclock/1000)
-    end_time = strtime(lastclock/1000)
+    start_time = format_timestamp(initial_timestamp/1000)
+    end_time = format_timestamp(end_timestamp/1000)
     studying_time = timestamp_to_minutes(studying_time)
     playing_time = timestamp_to_minutes(playing_time)
     total_time = timestamp_to_minutes(total_time)
     # date = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d') 
+    print("****************************************************************")
+    print(studying_time,end_timestamp, initial_timestamp)
    
     talbe_list = timeTable(id=str(uuid.uuid4().hex),
                             start_time=start_time,

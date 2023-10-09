@@ -45,8 +45,8 @@
       let elapsedTime = 0;
       let pauseTime = 0;
       let totalSecondsElapsed = 0; // 공부한 시간
-      let firstclock = null; // 처음 시작 누른 시간
-      let lastclock = null; // 처음 종료 누른 시간
+      let initial_timestamp = null; // 처음 시작 누른 시간
+      let end_timestamp = null; // 처음 종료 누른 시간
 
       function startTimer() {
         if (!timerInterval) {
@@ -58,9 +58,9 @@
             startTime = Date.now();
 
             //  처음 시작 누른 시간 저장
-            if (firstclock == null) {
-              firstclock = Date.now();
-              console.log(firstclock);
+            if (initial_timestamp == null) {
+              initial_timestamp = Date.now();
+              console.log(initial_timestamp);
             }
           }
           timerInterval = setInterval(updateTimer, 10); // 타이머 간격을 밀리초 단위로 설정 (10ms)
@@ -75,9 +75,9 @@
 
       function resetTimer() {
         //  처음 종료 누른 시간 저장
-        if (lastclock == null) {
-          lastclock = Date.now();
-          console.log(lastclock);
+        if (end_timestamp == null) {
+          end_timestamp = Date.now();
+          console.log(end_timestamp);
         }
 
         // AJAX를 사용하여 Flask에 POST 요청 보내기
@@ -94,8 +94,8 @@
 
         let dataToSend = {
           studying_time: elapsedTime,
-          firstclock: firstclock,
-          lastclock: lastclock,
+          initial_timestamp: initial_timestamp,
+          end_timestamp: end_timestamp,
         };
         xhr.send(JSON.stringify(dataToSend)); //JSON 형태로 파이썬에 전송
 
