@@ -25,7 +25,7 @@ from datetime import datetime
 from streamer import Streamer
 
 
-# //변수 선언//
+# [변수 선언]
 model = load_model("model.h5") # 경로에 한글 없어야 함  
 print(model.summary())
 
@@ -38,7 +38,7 @@ session = Session()
 
 Base = declarative_base()
 
-# 데이터 클래스 생성
+# //데이터 클래스 생성
 class timeTable(Base):
     __tablename__ = 'studyTable'
     id = Column(String, primary_key =True, default=uuid.uuid4().hex)  #고유성 제약 조건 (동일한 키 안됨)
@@ -52,8 +52,8 @@ timeTable.__table__.create(bind=engine, checkfirst=True)
 
 
 
-# //함수//
-# 이미지 전처리
+# [함수]
+# //이미지 전처리
 def preprocess_image(frame_test):
     frame_test = np.array(frame_test) # 배열을 numpy 형태로  
     dim = int(np.sqrt(len(frame_test))) # 정사각형 형태의 2차원 이미지 크기 결정
@@ -64,7 +64,7 @@ def preprocess_image(frame_test):
     return frame_test_reshaped
 
 
-# 카메라 처리 
+# //카메라 처리 
 cum_count = 0
 def stream_gen( src ):   
     try :    
@@ -100,12 +100,12 @@ def stream_gen( src ):
         streamer.stop()
 
 
-# timestamp 처리 
+# //timestamp 처리 
 def format_timestamp(timestamp):
     return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H')  # **추후에는 %H도 없애기**
 
 
-# timestamp를 시간으로 나타내어 문자 출력
+# //timestamp를 시간으로 나타내어 문자 출력
 def format_time_string(timestamp):
         second = int(np.floor(timestamp/1000))
         minute = int(np.floor(second/60))
@@ -115,7 +115,7 @@ def format_time_string(timestamp):
         return f"{hour}시간 {minute}분 {second}초 "
 
 
-# timestamp를 '분' 기준으로 변경
+# //timestamp를 '분' 기준으로 변경
 def timestamp_to_minutes(timestamp):
     second = int(np.floor(timestamp/1000))
     minute = int(np.floor(second/60))
@@ -124,14 +124,14 @@ def timestamp_to_minutes(timestamp):
 
 
 
-# //route//
-# 기본 index
+# [route]
+# // 기본 index
 @application.route('/')
 def index():
     return render_template('index.html')
 
 
-# ai_recoder 관련 GET,POST
+# //ai_recoder 관련 GET,POST
 studying_time, playing_time, total_time, initial_timestamp, end_timestamp = None, None, None, None, None
 
 @application.route('/ai_recoder', methods=['GET','POST'])
@@ -157,7 +157,7 @@ def ai_recoder():
     return render_template('ai_recoder.html')
 
 
-# 실시간 스트리밍
+# //실시간 스트리밍
 @application.route('/stream')
 def stream(): 
     src = request.args.get( 'src', default = 0, type = int )
@@ -172,7 +172,7 @@ def stream():
         print('stream error : ',str(e))
 
 
-# 상태 업데이트
+# //상태 업데이트
 @application.route('/update_stream')
 def update():
     state = ""
@@ -185,7 +185,7 @@ def update():
     return jsonify({'state_act': state_act,'state_time':state_time}) # 이렇게도 가능...
 
 
-# 시간 리스트들 기록
+# //시간 리스트들 기록
 @application.route('/recode')
 def recode():
     return render_template('recode.html',
@@ -194,7 +194,7 @@ def recode():
                            total_time=format_time_string(total_time))
 
         
-# 차트 기록
+# //차트 기록
 # ********************************
 # 1. end_time 을 date로 바꿔주기
 # 2. 지금은 hour 기준으로 차트 나눔 (실제로는 하루 단위로)
