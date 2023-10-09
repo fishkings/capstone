@@ -3,6 +3,7 @@ from flask import redirect, url_for,Response
 from flask import stream_with_context
 
 import sqlalchemy
+from sqlalchemy import func
 from sqlalchemy import create_engine, or_
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column,Integer,String
@@ -100,7 +101,7 @@ def stream_gen( src ):
 
 # timestamp 처리 
 def format_timestamp(timestamp):
-    return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M')
+    return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H')  # **추후에는 %H도 없애기**
 
 # timestamp를 시간으로 나타내어 문자 출력
 def format_time_string(timestamp):
@@ -117,6 +118,7 @@ def timestamp_to_minutes(timestamp):
     minute = int(np.floor(second/60))
     second %= 60
     return float(f"{minute}.{second:02}")
+
 # ****************************************************************
 
 
@@ -152,56 +154,19 @@ def ai_recoder():
         print("전체 공부시간 : ",format_time_string(total_time))
     return render_template('ai_recoder.html')
 
-@application.route('/recode')
-def recode():
-    return render_template('recode.html',
-                           studying_time=format_time_string(studying_time),
-                           playing_time=format_time_string(playing_time),
-                           total_time=format_time_string(total_time))
-
-# 차트 기록
-# ********************************
-# 1. end_time 을 date로 바꿔주기
-# ********************************
-@application.route('/recode_chart',methods=['GET','POST'])
-def recode_chart():
-    global studying_time
-    global total_time
-    global playing_time
-    global end_time  # 수정되야 할 부분
-
-    initial_time = format_timestamp(initial_timestamp/1000)
-    end_time = format_timestamp(end_timestamp/1000)
-    studying_time = timestamp_to_minutes(studying_time)
-    playing_time = timestamp_to_minutes(playing_time)
-    total_time = timestamp_to_minutes(total_time)
-    # date = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d') 
-   
-    talbe_list = timeTable(id=str(uuid.uuid4().hex),
-                           # **date 값 추가 해야함**
-                            initial_time=initial_time,  
-                            end_time=end_time,
-                            studying_time=studying_time,
-                            playing_time=playing_time,
-                            total_time=total_time)
-    
-    session.add(talbe_list)  # session.add_all([])  -> 이렇게도 가능
-    session.commit()
-
-    time_lists = ["playing_time", "studying_time",  "total_time", "end_time"]
-    for idx,time_list in enumerate(time_lists):
-        datas = [x for x in session.query(getattr(timeTable, time_list)).all()] # 동적 할당을 위해 getattr 사용
-        globals()[time_list] =  [data[0] for data in datas] # playing/studying/total_time에 전처리 후 데이터 할당
-
-    datasets = [
-        {'label' : end_time , # 수정되야 할 부분
-         'playing_time' : playing_time,
-         'studying_time' : studying_time,
-         'total_time' : total_time}
-    ]    
-
-    return render_template('recode_chart.html',
-                              datasets = datasets)
+# 실시간 스트리밍
+@application.route('/stream')
+def stream(): 
+    src = request.args.get( 'src', default = 0, type = int )
+    try :  
+        return Response(
+                        stream_with_context( stream_gen( src ) ),
+                        mimetype='multipart/x-mixed-replace; boundary=frame' 
+                        # stream_with_context() 함수는 제너레이터가 생성한 데이터를 받아
+                        # 적절한 형식으로 Resoponse에 전달
+                        )
+    except Exception as e : 
+        print('stream error : ',str(e))
 
 # 이렇게도 가능...
 # 상태 업데이트
@@ -216,30 +181,89 @@ def update():
         state_time = 1
     return jsonify({'state_act': state_act,'state_time':state_time})
 
-# 실시간 스트리밍
-@application.route('/stream')
-def video_feed(): 
-    src = request.args.get( 'src', default = 0, type = int )
-    try :  
-        return Response(
-                        stream_with_context( stream_gen( src ) ),
-                        mimetype='multipart/x-mixed-replace; boundary=frame' 
-                        # stream_with_context() 함수는 제너레이터가 생성한 데이터를 받아
-                        # 적절한 형식으로 Resoponse에 전달
-                        )
-    except Exception as e : 
-        print('stream error : ',str(e))
+
+# 시간 리스트들 기록
+@application.route('/recode')
+def recode():
+    return render_template('recode.html',
+                           studying_time=format_time_string(studying_time),
+                           playing_time=format_time_string(playing_time),
+                           total_time=format_time_string(total_time))
+
         
+# 차트 기록
+# ********************************
+# 1. end_time 을 date로 바꿔주기
+# 2. studying/playing/total_time은 timestamp로 저장 -> 계산 편의성을 위해
+# 2-1. 최종 불러 올때 분으로 변환시키기
+# ********************************
+@application.route('/recode_chart',methods=['GET','POST'])
+def recode_chart():
+    global studying_time 
+    global total_time
+    global playing_time
+    global end_time  # 수정되야 할 부분
+
+    initial_time = format_timestamp(initial_timestamp/1000)
+    end_time = format_timestamp(end_timestamp/1000)
+    # date = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d') 
+   
+    talbe_list = timeTable(id=str(uuid.uuid4().hex),
+                           # **date 값 추가 해야함**
+                            initial_time=initial_time,  
+                            end_time=end_time,
+                            studying_time=studying_time,
+                            playing_time=playing_time,
+                            total_time=total_time)
+    
+    session.add(talbe_list)  # session.add_all([])  -> 이렇게도 가능
+    session.commit()
+
+    # db groupby하여 날짜별 합산 후 리스트에 저장   
+    total_time,studying_time,playing_time,end_time = [],[],[],[]   
+    searchs = session.query(
+        func.sum(timeTable.total_time).label('total_time_sum'),
+        func.sum(timeTable.studying_time).label('studying_time_sum'),
+        func.sum(timeTable.playing_time).label('playing_time_sum'),
+        timeTable.end_time.label('end_time')
+    ).group_by(timeTable.end_time).all()
+
+    for search in searchs:
+        total_time.append(search[0])
+        studying_time.append(search[1])
+        playing_time.append(search[2])
+        end_time.append(search[3])
+        
+    print(total_time,studying_time,playing_time,end_time)
+
+    # gruopby 안하고 매번 카운트 하는 경우
+    # time_lists = ["playing_time", "studying_time",  "total_time", "end_time"] 
+    # for idx,time_list in enumerate(time_lists):
+    #     datas = [x for x in session.query(getattr(timeTable, time_list)).all()] # 동적 할당을 위해 getattr 사용
+    #     globals()[time_list] =  [data[0] for data in datas] # playing/studying/total_time에 전처리 후 데이터 할당
+
+    datasets = [
+        {'label' : end_time , # 수정되야 할 부분
+         'playing_time' : playing_time,
+         'studying_time' : studying_time,
+         'total_time' : total_time}
+    ]    
+
+    return render_template('recode_chart.html',
+                              datasets = datasets)
+
+
 if __name__ == '__main__':
     application.run(debug=True) #host='0.0.0.0', port=8001  서버배포 
 
 
 # ****************************************************************
+# time_list 값들 sum 하기
 # 여러명이 접속했을때 카메라 
 # @app.route('/test/method/<id>')   -> 카메라 개개인 배치
 # def method_test(id):  -> 이런 방법 시도해보기
 # Readme 수정 / 모델 설계도 추가
 # 시작 안누르고 바로 종료하면 에러 and 바로 차트 들어가면 에러 -> try 문 쓰기
 # 코드 정리 ( 함수는 동사로 시작하게 (함수는 한가지 기능만 수행하도록)/
-# 
+# 차트로 출력 할 때 timestamp_to_minutes 함수 적용해서 하기 and 하루 넘어갈 때 계산
 # ****************************************************************

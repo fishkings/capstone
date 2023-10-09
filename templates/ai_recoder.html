@@ -38,6 +38,66 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
+    <style>
+      .col-lg-4 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+      }
+
+      .page-section {
+        width: 100%;
+        /* 원하는 이미지 너비 값으로 변경 */
+        height: auto;
+        /* 자동으로 높이 조정 */
+      }
+
+      .portfolio-item {
+        padding: 8px;
+        position: relative;
+      }
+
+      #timer {
+        display: inline-block;
+        width: 80px;
+        /* 각 숫자의 너비 */
+        height: 40px;
+        /* 각 숫자의 높이 */
+        font-size: 30px;
+        /* 원하는 폰트 크기 */
+        margin-right: 120px;
+      }
+
+      .timer-contant {
+        text-align: center;
+        margin-top: 20px;
+        padding: 30px;
+      }
+
+      .button #pauseButton {
+        display: none;
+      }
+
+      @media (max-width: 767px) {
+        .col-lg-4.col-sm-6.mb-4 {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .timer-contant {
+          text-align: center;
+          margin-top: 20px;
+          padding: 0px;
+        }
+
+        .portfolio-item {
+          position: relative;
+        }
+      }
+    </style>
+
     <script type="text/javascript">
       // 타이머 함수
       let startTime = 0;
@@ -220,66 +280,6 @@
       </div>
     </nav>
 
-    <!-- Portfolio Grid-->
-    <style>
-      .col-lg-4 {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        width: 100%;
-      }
-
-      .page-section {
-        width: 100%;
-        /* 원하는 이미지 너비 값으로 변경 */
-        height: auto;
-        /* 자동으로 높이 조정 */
-      }
-
-      .portfolio-item {
-        padding: 8px;
-        position: relative;
-      }
-
-      #timer {
-        display: inline-block;
-        width: 80px;
-        /* 각 숫자의 너비 */
-        height: 40px;
-        /* 각 숫자의 높이 */
-        font-size: 30px;
-        /* 원하는 폰트 크기 */
-        margin-right: 120px;
-      }
-
-      .timer-contant {
-        text-align: center;
-        margin-top: 20px;
-        padding: 30px;
-      }
-
-      .button #pauseButton {
-        display: none;
-      }
-
-      @media (max-width: 767px) {
-        .col-lg-4.col-sm-6.mb-4 {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .timer-contant {
-          text-align: center;
-          margin-top: 20px;
-          padding: 0px;
-        }
-
-        .portfolio-item {
-          position: relative;
-        }
-      }
-    </style>
     <div class="page-section-timer">
       <section class="page-section bg-light" id="portfolio">
         <div class="container">
@@ -291,7 +291,6 @@
           </div>
           <div class="row">
             <div class="col-lg-4 col-sm-6 mb-4">
-              <!-- Portfolio item 1-->
               <div class="portfolio-item">
                 <a
                   class="portfolio-link"
@@ -304,7 +303,7 @@
                   <!-- jpg 형식으로 인코딩해서 img 요소 써야 함 -->
                   <img
                     id="videoFeed"
-                    src="{{ url_for('video_feed') }}"
+                    src="{{ url_for('stream') }}"
                     width="320"
                     height="320"
                   />
