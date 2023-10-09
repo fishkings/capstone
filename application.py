@@ -42,7 +42,7 @@ Base = declarative_base()
 class timeTable(Base):
     __tablename__ = 'studyTable'
     id = Column(String, primary_key =True, default=uuid.uuid4().hex)  #고유성 제약 조건 (동일한 키 안됨)
-    start_time = Column(String)
+    initial_time = Column(String)
     end_time = Column(String)  
     date = Column(String)
     playing_time = Column(Integer)
@@ -146,7 +146,6 @@ def ai_recoder():
         total_time = end_timestamp - initial_timestamp  # 처음 시작 누른 시점 시간 - 처음 종료 누른 시점 시간
         playing_time =  total_time -studying_time # 총 시간 - 공부 시간
         
-        print("****************************************************************")
         print(studying_time,end_timestamp, initial_timestamp)
         print("순 공부시간 : ",format_time_string(studying_time))
         print("딴 짓 시간 : ",format_time_string(playing_time))
@@ -161,23 +160,26 @@ def recode():
                            total_time=format_time_string(total_time))
 
 # 차트 기록
+# ********************************
+# 1. end_time 을 date로 바꿔주기
+# ********************************
 @application.route('/recode_chart',methods=['GET','POST'])
 def recode_chart():
     global studying_time
     global total_time
     global playing_time
+    global end_time  # 수정되야 할 부분
 
-    start_time = format_timestamp(initial_timestamp/1000)
+    initial_time = format_timestamp(initial_timestamp/1000)
     end_time = format_timestamp(end_timestamp/1000)
     studying_time = timestamp_to_minutes(studying_time)
     playing_time = timestamp_to_minutes(playing_time)
     total_time = timestamp_to_minutes(total_time)
     # date = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d') 
-    print("****************************************************************")
-    print(studying_time,end_timestamp, initial_timestamp)
    
     talbe_list = timeTable(id=str(uuid.uuid4().hex),
-                            start_time=start_time,
+                           # **date 값 추가 해야함**
+                            initial_time=initial_time,  
                             end_time=end_time,
                             studying_time=studying_time,
                             playing_time=playing_time,
@@ -186,20 +188,13 @@ def recode_chart():
     session.add(talbe_list)  # session.add_all([])  -> 이렇게도 가능
     session.commit()
 
-    studying_time = [x for x in session.query(timeTable.studying_time).all()]
-    playing_time = [x for x in session.query(timeTable.playing_time).all()]
-    total_time = [x for x in session.query(timeTable.total_time).all()]
-    date = [x for x in session.query(timeTable.end_time).all()]
-    origin_datasets = {'data' : [studying_time,playing_time,total_time,date]} 
-
-
-    playing_time = [origin_dataset[0] for origin_dataset in origin_datasets['data'][0]]
-    studying_time = [origin_dataset[0] for origin_dataset in origin_datasets['data'][1]]
-    total_time = [origin_dataset[0] for origin_dataset in origin_datasets['data'][2]]
-    date = [origin_dataset[0] for origin_dataset in origin_datasets['data'][3]]
+    time_lists = ["playing_time", "studying_time",  "total_time", "end_time"]
+    for idx,time_list in enumerate(time_lists):
+        datas = [x for x in session.query(getattr(timeTable, time_list)).all()] # 동적 할당을 위해 getattr 사용
+        globals()[time_list] =  [data[0] for data in datas] # playing/studying/total_time에 전처리 후 데이터 할당
 
     datasets = [
-        {'label' : date , # 임시로 end_time 설정
+        {'label' : end_time , # 수정되야 할 부분
          'playing_time' : playing_time,
          'studying_time' : studying_time,
          'total_time' : total_time}
