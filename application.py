@@ -25,7 +25,6 @@ from datetime import datetime
 from streamer import Streamer
 
 
-# ****************************************************************
 # //변수 선언//
 model = load_model("model.h5") # 경로에 한글 없어야 함  
 print(model.summary())
@@ -52,7 +51,7 @@ class timeTable(Base):
 timeTable.__table__.create(bind=engine, checkfirst=True)
 
 
-# ****************************************************************
+
 # //함수//
 # 이미지 전처리
 def preprocess_image(frame_test):
@@ -63,6 +62,7 @@ def preprocess_image(frame_test):
     frame_test_rgb = cv2.cvtColor(frame_test, cv2.COLOR_GRAY2RGB) # 색상 공간 변환
     frame_test_reshaped = np.expand_dims(frame_test_rgb, axis=0) # 배치 차원 생성
     return frame_test_reshaped
+
 
 # 카메라 처리 
 cum_count = 0
@@ -99,9 +99,11 @@ def stream_gen( src ):
         print( 'disconnected stream' )
         streamer.stop()
 
+
 # timestamp 처리 
 def format_timestamp(timestamp):
     return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H')  # **추후에는 %H도 없애기**
+
 
 # timestamp를 시간으로 나타내어 문자 출력
 def format_time_string(timestamp):
@@ -112,6 +114,7 @@ def format_time_string(timestamp):
         minute %= 60
         return f"{hour}시간 {minute}분 {second}초 "
 
+
 # timestamp를 '분' 기준으로 변경
 def timestamp_to_minutes(timestamp):
     second = int(np.floor(timestamp/1000))
@@ -119,15 +122,14 @@ def timestamp_to_minutes(timestamp):
     second %= 60
     return float(f"{minute}.{second:02}")
 
-# ****************************************************************
 
 
-# ****************************************************************
 # //route//
-# 기본
+# 기본 index
 @application.route('/')
 def index():
     return render_template('index.html')
+
 
 # ai_recoder 관련 GET,POST
 studying_time, playing_time, total_time, initial_timestamp, end_timestamp = None, None, None, None, None
@@ -154,6 +156,7 @@ def ai_recoder():
         print("전체 공부시간 : ",format_time_string(total_time))
     return render_template('ai_recoder.html')
 
+
 # 실시간 스트리밍
 @application.route('/stream')
 def stream(): 
@@ -168,7 +171,7 @@ def stream():
     except Exception as e : 
         print('stream error : ',str(e))
 
-# 이렇게도 가능...
+
 # 상태 업데이트
 @application.route('/update_stream')
 def update():
@@ -179,7 +182,7 @@ def update():
     else : 
         state_act = "공부 중"
         state_time = 1
-    return jsonify({'state_act': state_act,'state_time':state_time})
+    return jsonify({'state_act': state_act,'state_time':state_time}) # 이렇게도 가능...
 
 
 # 시간 리스트들 기록
@@ -194,8 +197,8 @@ def recode():
 # 차트 기록
 # ********************************
 # 1. end_time 을 date로 바꿔주기
-# 2. studying/playing/total_time은 timestamp로 저장 -> 계산 편의성을 위해
-# 2-1. 최종 불러 올때 분으로 변환시키기
+# 2. 지금은 hour 기준으로 차트 나눔 (실제로는 하루 단위로)
+# 3. 
 # ********************************
 @application.route('/recode_chart',methods=['GET','POST'])
 def recode_chart():
@@ -216,23 +219,24 @@ def recode_chart():
                             playing_time=playing_time,
                             total_time=total_time)
     
-    session.add(talbe_list)  # session.add_all([])  -> 이렇게도 가능
+    session.add(talbe_list)  
     session.commit()
 
-    # db groupby하여 날짜별 합산 후 리스트에 저장   
+    # db groupby하여 날짜별 합산    
     total_time,studying_time,playing_time,end_time = [],[],[],[]   
-    searchs = session.query(
+    time_list_sums = session.query(
         func.sum(timeTable.total_time).label('total_time_sum'),
         func.sum(timeTable.studying_time).label('studying_time_sum'),
         func.sum(timeTable.playing_time).label('playing_time_sum'),
         timeTable.end_time.label('end_time')
     ).group_by(timeTable.end_time).all()
 
-    for search in searchs:
-        total_time.append(search[0])
-        studying_time.append(search[1])
-        playing_time.append(search[2])
-        end_time.append(search[3])
+    # 리스트에 저장 후 timestamp를 minutes으로 변경
+    for time_list_sum in time_list_sums:
+        total_time.append(timestamp_to_minutes(time_list_sum[0]))
+        studying_time.append(timestamp_to_minutes(time_list_sum[1]))
+        playing_time.append(timestamp_to_minutes(time_list_sum[2]))
+        end_time.append(time_list_sum[3])
         
     print(total_time,studying_time,playing_time,end_time)
 
@@ -248,9 +252,9 @@ def recode_chart():
          'studying_time' : studying_time,
          'total_time' : total_time}
     ]    
-
     return render_template('recode_chart.html',
                               datasets = datasets)
+
 
 
 if __name__ == '__main__':
@@ -258,12 +262,10 @@ if __name__ == '__main__':
 
 
 # ****************************************************************
-# time_list 값들 sum 하기
 # 여러명이 접속했을때 카메라 
 # @app.route('/test/method/<id>')   -> 카메라 개개인 배치
 # def method_test(id):  -> 이런 방법 시도해보기
 # Readme 수정 / 모델 설계도 추가
 # 시작 안누르고 바로 종료하면 에러 and 바로 차트 들어가면 에러 -> try 문 쓰기
 # 코드 정리 ( 함수는 동사로 시작하게 (함수는 한가지 기능만 수행하도록)/
-# 차트로 출력 할 때 timestamp_to_minutes 함수 적용해서 하기 and 하루 넘어갈 때 계산
 # ****************************************************************

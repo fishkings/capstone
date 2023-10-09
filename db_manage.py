@@ -29,8 +29,8 @@ class timeTable(Base):
 timeTable.__table__.create(bind=engine, checkfirst=True)
 
 # 기존 테이블 삭제 / 생성
-Base.metadata.drop_all(engine)
-Base.metadata.create_all(engine)
+# Base.metadata.drop_all(engine)
+# Base.metadata.create_all(engine)
 
 # READ
 result = session.query(timeTable).all()
