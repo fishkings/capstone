@@ -26,7 +26,7 @@ from streamer import Streamer
 
 
 # [변수 선언]
-model = load_model("model.h5") # 경로에 한글 없어야 함  
+model = load_model(r"model.h5") # 경로에 한글 없어야 함  
 print(model.summary())
 
 engine = create_engine(r'sqlite:///database.db',echo=False)
@@ -54,19 +54,17 @@ timeTable.__table__.create(bind=engine, checkfirst=True)
 
 # [함수]
 # //이미지 전처리
-def preprocess_image(frame_test):
-    frame_test = np.array(frame_test) # 배열을 numpy 형태로  
-    dim = int(np.sqrt(len(frame_test))) # 정사각형 형태의 2차원 이미지 크기 결정
-    frame_test = frame_test[:dim*dim].reshape((dim, dim))
-    frame_test = cv2.resize(frame_test, (224, 224)) # 이미지 크기 (224,224)
-    frame_test_rgb = cv2.cvtColor(frame_test, cv2.COLOR_GRAY2RGB) # 색상 공간 변환
-    frame_test_reshaped = np.expand_dims(frame_test_rgb, axis=0) # 배치 차원 생성
-    return frame_test_reshaped
+def preprocess_image(image):
+    resized_image = cv2.resize(image, (224, 224))
+    image_array = np.array(resized_image)
+    normalized_image_array = (image_array.astype(np.float32) / 127.5) - 1
+    input_data = np.expand_dims(normalized_image_array, axis=0)
+    return input_data
 
 
 # //카메라 처리 
 cum_count = 0
-def stream_gen( src ):   
+def stream_gen( src ):    
     try :    
         streamer.run( src )   
         counter = 0  # 실행 횟수 
@@ -74,27 +72,29 @@ def stream_gen( src ):
 
         global cum_count
         while True :                        
+            frame,image = streamer.bytescode()
             # 시간 간격을 두고 모델 예측   
             if counter % interval == 0:
-                frame_test = streamer.bytescode()[1]
-                frame_test_reshaped = preprocess_image(frame_test)
-                class0 = model.predict(frame_test_reshaped)[0][0]
-                class1 = model.predict(frame_test_reshaped)[0][1] # 우선 딴 짓으로 생각
-                print(class0, class1)
+                prediction = model.predict(preprocess_image(image))
+                class1,class2 = prediction[0]   # class1 공부  / class2 핸드폰
+                # print(class1, class2)
                 # 딴 짓 누적 -> 알림
-                if class1 > class0 :
+                if class2 > class1 :
+                    print("딴짓 중")
+                    print(f"딴짓 누적 {cum_count%5} / 5")
                     cum_count +=1
-                    print(cum_count)
+                else :
+                    print("공부중")
+
                 # ****************************************************************
                 # 딴 짓이 연속적으로 누적되면 AJAX로 신호 보내고 아니면 다시 초기화
                 # ****************************************************************
-
-            frame = streamer.bytescode()[1].tobytes()   # 이거는 필요함 
             
             yield (b'--frame\r\n'  # 멀티파트 응답 형식으로 프레임 데이터를 반환
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
             # yield는 값을 생성하고 반환하는 동시에 실행 상태 유지 가능하게 하는 함수  
             counter += 1
+
     except GeneratorExit :
         print( 'disconnected stream' )
         streamer.stop()

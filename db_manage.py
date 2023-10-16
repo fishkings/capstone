@@ -51,27 +51,6 @@ for row in result:
 
 # session.commit()    
 
-# db groupby
-# result = session.query(
-#     func.sum(timeTable.total_time).label('total_time_sum'),
-#     func.sum(timeTable.studying_time).label('studying_time_sum'),
-#     func.sum(timeTable.playing_time).label('playing_time_sum'),
-#     timeTable.end_time.label('end_time')
-# ).group_by(timeTable.end_time).all()
-
-
-# total_time,studying_time,playing_time,end_time = [],[],[],[]
-
-# for row in result:
-#     total_time.append(row[0])
-#     studying_time.append(row[1])
-#     playing_time.append(row[2])
-#     end_time.append(row[3])
-    
-
-# print(total_time,studying_time,playing_time,end_time)
-
-# 한시간 단위로 하고 나머지는 누적 
 
 
 

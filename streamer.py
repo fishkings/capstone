@@ -92,7 +92,6 @@ class Streamer :
             # 이후 프레임의 크기를 지정된 너비에 맞게 조정 
             # imutils.resize()는 이미지 크기를 조정하는 함수
             frame = imutils.resize(self.read(), width=int(self.width) )
-        
             if self.stat :  
                 cv2.rectangle( frame, (0,0), (120,30), (0,0,0), -1) # 좌상단 영역
                 fps = 'FPS : ' + str(self.fps())
@@ -100,7 +99,7 @@ class Streamer :
                 cv2.putText  ( frame, fps, (10,20), cv2.FONT_HERSHEY_PLAIN, 1, (0,0,255), 1, cv2.LINE_AA)
                 # 생성된 FPS 문자열을 화면 좌상단에 텍스트 추가            
         
-        return cv2.imencode('.jpg', frame )     #[1].tobytes() 
+        return cv2.imencode('.jpg', frame )[1].tobytes() ,frame
         #JPEG 형식으로 인코딩하고, 이미지를 바이트 코드로 반환
         # cv2.imencode('확장자', 이미지 데이터)
         # cv2.imencode()은 튜플로 반환되고 [0]은 성공여부, [1]은 인코딩 데이터 반환
