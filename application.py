@@ -76,10 +76,10 @@ def stream_gen( src ):
             # 시간 간격을 두고 모델 예측   
             if counter % interval == 0:
                 prediction = model.predict(preprocess_image(image))
-                class1,class2 = prediction[0]   # class1 공부  / class2 핸드폰
+                class1,class2 = prediction[0]   # class1 핸드폰 / class2 공부
                 # print(class1, class2)
                 # 딴 짓 누적 -> 알림
-                if class2 > class1 :
+                if class2 < class1 :
                     print("딴짓 중")
                     print(f"딴짓 누적 {cum_count%5} / 5")
                     cum_count +=1
