@@ -16,18 +16,25 @@ import tensorflow
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.models import load_model
+
 import os
 import time
 from time import strftime
 from time import localtime
 from datetime import datetime
+from joblib import dump, load
+import warnings
+
 
 from streamer import Streamer
 
+warnings.filterwarnings("ignore")
 
 # [변수 선언]
-model = load_model(r"model.h5") # 경로에 한글 없어야 함  
-print(model.summary())
+model = load('model.joblib') # 경로에 한글 없어야 함  
+# movenet 모델 interpreter 
+interpreter = tf.lite.Interpreter(model_path="movenet/lite-model_movenet_singlepose_lightning_3.tflite")
+interpreter.allocate_tensors()
 
 engine = create_engine(r'sqlite:///database.db',echo=False)
 application = Flask(__name__)
@@ -63,37 +70,82 @@ def preprocess_image(image):
 
 
 # //카메라 처리 
-cum_count = 0
+state = 0
+interval = 0  # 모델 predict 딜레이
+
 def stream_gen( src ):    
     try :    
         streamer.run( src )   
         counter = 0  # 실행 횟수 
         interval = 100  # 간격 설정 (n번 중 한 번 실행)
 
-        global cum_count
-        while True :                        
+        global state
+        while True :   
+            data = []                     
             frame,image = streamer.bytescode()
-            # 시간 간격을 두고 모델 예측   
-            if counter % interval == 0:
-                prediction = model.predict(preprocess_image(image))
-                class1,class2 = prediction[0]   # class1 핸드폰 / class2 공부
-                # print(class1, class2)
-                # 딴 짓 누적 -> 알림
-                if class2 < class1 :
-                    print("딴짓 중")
-                    print(f"딴짓 누적 {cum_count%5} / 5")
-                    cum_count +=1
-                else :
-                    print("공부중")
 
-                # ****************************************************************
-                # 딴 짓이 연속적으로 누적되면 AJAX로 신호 보내고 아니면 다시 초기화
-                # ****************************************************************
+            if interval % 100 == 0:
+                # Reshape image
+                image = tf.image.resize_with_pad(np.expand_dims(image, axis=0), 192,192)
+                input_image = tf.cast(image, dtype=tf.float32)
+
+                # Setup input and output 
+                input_details = interpreter.get_input_details()
+                output_details = interpreter.get_output_details()
+
+                # Make predictions 
+                interpreter.set_tensor(input_details[0]['index'], np.array(input_image))
+                interpreter.invoke()
+                keypoints_with_scores = interpreter.get_tensor(output_details[0]['index'])
+            
+                point_cnt = 0  # 관절수 카운트
+                for keypoints_with_score in keypoints_with_scores[0][0][:11]:
+                    for ax in range(2):
+                        data.append(keypoints_with_score[:2][ax])
+                        if (keypoints_with_score[2]> 0.1):# 0.1 이하는 point 감지 못 한 것으로 간주
+                            point_cnt += 1
+
+                # 모델 테스트
+                data = np.array(data)
+                state = model.predict(data.reshape(1, -1))
+                print(f"감지되는 관절 포인트: {point_cnt}")
+                if point_cnt >= 16 :   #  2개(x,y좌표) * 3(최소 3관절 이상) * 2(오른쪽,왼쪽)
+                    if state == 1 : 
+                        print("공부 중")
+                    elif state == 0 : 
+                        print("딴짓 중")
+                else : 
+                    state = 0 
+                    print("딴짓 중 _ 관절수 부족")
+                    
+                interval = 0 
+            interval += 1 
+
             
             yield (b'--frame\r\n'  # 멀티파트 응답 형식으로 프레임 데이터를 반환
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
             # yield는 값을 생성하고 반환하는 동시에 실행 상태 유지 가능하게 하는 함수  
-            counter += 1
+            # counter += 1
+
+
+            # # 시간 간격을 두고 모델 예측   
+            # if counter % interval == 0:
+            #     prediction = model.predict(preprocess_image(image))
+            #     class1,class2 = prediction[0]   # class1 핸드폰 / class2 공부
+            #     # print(class1, class2)
+            #     # 딴 짓 누적 -> 알림
+            #     if class2 < class1 :
+            #         print("딴짓 중")
+            #         print(f"딴짓 누적 {cum_count%5} / 5")
+            #         cum_count +=1
+            #     else :
+            #         print("공부중")
+
+                # ****************************************************************
+                # 딴 짓이 연속적으로 누적되면 AJAX로 신호 보내고 아니면 다시 초기화
+                # ****************************************************************
+
+      
 
     except GeneratorExit :
         print( 'disconnected stream' )
@@ -175,13 +227,12 @@ def stream():
 # //상태 업데이트
 @application.route('/update_stream')
 def update():
-    state = ""
-    if cum_count%5 ==0 : 
+    if state : 
+        state_act = "공부 중"
+        state_time = 1        
+    else : 
         state_act = "딴짓 중"
         state_time = 0
-    else : 
-        state_act = "공부 중"
-        state_time = 1
     return jsonify({'state_act': state_act,'state_time':state_time}) # 이렇게도 가능...
 
 

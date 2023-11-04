@@ -1,3 +1,4 @@
+"""동영상을 프레임 단위로 쪼개주는 코드"""
 import cv2
 
 vidcap = cv2.VideoCapture(r'C:\Users\kcjer\OneDrive\바탕 화면\1.mp4')
