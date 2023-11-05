@@ -27,6 +27,7 @@ import warnings
 
 
 from streamer import Streamer
+from sms import SmsSender
 
 warnings.filterwarnings("ignore")
 
@@ -39,6 +40,8 @@ interpreter.allocate_tensors()
 engine = create_engine(r'sqlite:///database.db',echo=False)
 application = Flask(__name__)
 streamer = Streamer()
+sender = SmsSender()
+
 
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -63,7 +66,7 @@ timeTable.__table__.create(bind=engine, checkfirst=True)
 # //카메라 처리 
 state = 0
 interval = 0  # 모델 predict 딜레이
-
+playing_stack  = 0 
 def stream_gen( src ):    
     try :    
         streamer.run( src )   
@@ -102,14 +105,22 @@ def stream_gen( src ):
                 print(f"감지되는 관절 포인트: {point_cnt}")
                 if point_cnt >= 16 :   #  2개(x,y좌표) * 3(최소 3관절 이상) * 2(오른쪽,왼쪽)
                     if state == 1 : 
+                        playing_stack = 0
                         print("공부 중")
                     elif state == 0 : 
+                        playing_stack += 1
                         print("딴짓 중")
                 else : 
                     state = 0 
-                    print("딴짓 중 _ 관절수 부족")
-                    
+                    print("딴짓 중 _ 관절수 부족")                    
+                    playing_stack += 1
                 interval = 0 
+
+                print("playing_stack: ",playing_stack)
+                if playing_stack > 20 : 
+                    playing_stack = 0
+                    sender.send_sms(hp, '01024934320', '딴 짓 누적 !! 집중하세요')
+
             interval += 1 
 
             
@@ -151,6 +162,15 @@ def timestamp_to_minutes(timestamp):
 @application.route('/')
 def index():
     return render_template('index.html')
+
+hp = 0
+@application.route('/submit', methods=['POST'])
+def submit():
+    global hp 
+    if request.method == 'POST':
+        hp = request.form['hp']  # 'hp' 이름으로 전송된 데이터를 받음
+        print(f"받은 휴대폰 번호: {hp}")
+        return 'Success'
 
 
 # //ai_recoder 관련 GET,POST
