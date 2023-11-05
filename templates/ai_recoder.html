@@ -68,12 +68,27 @@
         font-size: 30px;
         /* 원하는 폰트 크기 */
         margin-right: 120px;
+        margin-bottom: 50px;
       }
 
       .timer-contant {
         text-align: center;
         margin-top: 20px;
-        padding: 30px;
+        padding: 50px;
+      }
+
+      .button {
+        display: flex;
+        align-items: center;
+      }
+
+      .button button {
+        margin: 10px; /* 시작 버튼과 종료 버튼 간의 간격 설정 */
+        width: 90px; /* 버튼의 넓이 조정 */
+        padding: 5px;
+        text-align: center; /* 텍스트 가운데 정렬 */
+        background-color: #ffcc70;
+        font-size: 20px;
       }
 
       .button #pauseButton {
@@ -84,6 +99,10 @@
         .col-lg-4.col-sm-6.mb-4 {
           display: flex;
           flex-direction: column;
+        }
+
+        #timer {
+          margin-bottom: 15px;
         }
 
         .timer-contant {
@@ -332,8 +351,20 @@
               <div class="timer-contant">
                 <h1 id="timer">00:00:00:00</h1>
                 <div class="button">
-                  <button id="startButton">시작</button>
-                  <a href="/recode"><button id="resetButton">종료</button></a>
+                  <button
+                    id="startButton"
+                    class="btn btn-primary btn-xl text-uppercase"
+                  >
+                    시작
+                  </button>
+                  <a href="/recode"
+                    ><button
+                      id="resetButton"
+                      class="btn btn-primary btn-xl text-uppercase"
+                    >
+                      종료
+                    </button></a
+                  >
                   <button id="pauseButton" class="styled-button">
                     일시정지
                   </button>
@@ -344,6 +375,5 @@
         </div>
       </section>
     </div>
-    <!-- Timer -->
   </body>
 </html>

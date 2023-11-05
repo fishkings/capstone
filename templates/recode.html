@@ -118,6 +118,15 @@
             align-items: center;
      }
 
+     .button button {
+        margin: 50px; /* 시작 버튼과 종료 버튼 간의 간격 설정 */
+        width: 120px; /* 버튼의 넓이 조정 */
+        padding: 10px;
+        text-align: center; /* 텍스트 가운데 정렬 */
+        background-color: #ffcc70;
+        font-size: 20px;
+      }
+
     @media (max-width: 775px) {
 
         /* 775px 이하일 때의 */
@@ -197,7 +206,7 @@
                 </div>
 
                 <div class="button">
-                    <a href="/recode_chart"><button id="saves">저장하기</button></a>
+                    <a href="/recode_chart"><button id="saves" class="btn btn-primary btn-xl text-uppercase">저장하기</button></a>
                 </div>
                 
                 
