@@ -60,15 +60,6 @@ timeTable.__table__.create(bind=engine, checkfirst=True)
 
 
 # [함수]
-# //이미지 전처리
-def preprocess_image(image):
-    resized_image = cv2.resize(image, (224, 224))
-    image_array = np.array(resized_image)
-    normalized_image_array = (image_array.astype(np.float32) / 127.5) - 1
-    input_data = np.expand_dims(normalized_image_array, axis=0)
-    return input_data
-
-
 # //카메라 처리 
 state = 0
 interval = 0  # 모델 predict 딜레이
@@ -84,7 +75,7 @@ def stream_gen( src ):
             data = []                     
             frame,image = streamer.bytescode()
 
-            if interval % 100 == 0:
+            if interval % 40 == 0:
                 # Reshape image
                 image = tf.image.resize_with_pad(np.expand_dims(image, axis=0), 192,192)
                 input_image = tf.cast(image, dtype=tf.float32)
@@ -124,28 +115,7 @@ def stream_gen( src ):
             
             yield (b'--frame\r\n'  # 멀티파트 응답 형식으로 프레임 데이터를 반환
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-            # yield는 값을 생성하고 반환하는 동시에 실행 상태 유지 가능하게 하는 함수  
-            # counter += 1
-
-
-            # # 시간 간격을 두고 모델 예측   
-            # if counter % interval == 0:
-            #     prediction = model.predict(preprocess_image(image))
-            #     class1,class2 = prediction[0]   # class1 핸드폰 / class2 공부
-            #     # print(class1, class2)
-            #     # 딴 짓 누적 -> 알림
-            #     if class2 < class1 :
-            #         print("딴짓 중")
-            #         print(f"딴짓 누적 {cum_count%5} / 5")
-            #         cum_count +=1
-            #     else :
-            #         print("공부중")
-
-                # ****************************************************************
-                # 딴 짓이 연속적으로 누적되면 AJAX로 신호 보내고 아니면 다시 초기화
-                # ****************************************************************
-
-      
+            # yield는 값을 생성하고 반환하는 동시에 실행 상태 유지 가능하게 하는 함수   
 
     except GeneratorExit :
         print( 'disconnected stream' )
@@ -246,11 +216,6 @@ def recode():
 
         
 # //차트 기록
-# ********************************
-# 1. end_time 을 date로 바꿔주기
-# 2. 지금은 hour 기준으로 차트 나눔 (실제로는 하루 단위로)
-# 3. 
-# ********************************
 @application.route('/recode_chart',methods=['GET','POST'])
 def recode_chart():
     global studying_time 

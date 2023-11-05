@@ -220,7 +220,7 @@
       //  AJAX
       $(document).ready(function () {
         $("#startButton").click(function () {
-          setInterval(ajaxcall, 15000); // 시간을 줄이면 일시정지 시간 반영 잘 안됨
+          setInterval(ajaxcall, 1000); // 시간을 줄이면 일시정지 시간 반영 잘 안됨
         });
       });
 
@@ -233,10 +233,15 @@
             $("#state").html(response.state_act); // 웹페이지 내용 업데이트
             if (response.state_time) {
               console.log("1");
-              startTimer();
+              if (!timerInterval) {
+                // 타이머가 실행 중이지 않은 경우에만 타이머 시작
+                startTimer();
+              }
             } else {
-              pauseTimer();
               console.log("2");
+              if (timerInterval) {
+                pauseTimer();
+              }
             }
           },
         });
