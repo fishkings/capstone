@@ -3,9 +3,9 @@ from sdk.api.message import Message
 from sdk.exceptions import CoolsmsException
 
 class SmsSender:
-    def __init__(self):
-        self.api_key = "NCSIJ1FFM1LWFUOJ"
-        self.api_secret = "S7TFTDQ1CBJF8V6NSMWXLDN3NK8SMC5Y"
+    def __init__(self,api_key,api_secret):
+        self.api_key = api_key
+        self.api_secret = api_secret
         self.cool = Message(self.api_key, self.api_secret)
     
     def send_sms(self, to, from_, text):

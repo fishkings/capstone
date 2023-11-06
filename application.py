@@ -40,7 +40,7 @@ interpreter.allocate_tensors()
 engine = create_engine(r'sqlite:///database.db',echo=False)
 application = Flask(__name__)
 streamer = Streamer()
-sender = SmsSender()
+sender = SmsSender("NCSNJQ6SJGFSBCKT","D0BL78J93ENXTEW1WMTWATZHW2GWFXEO") # APIkey, Secret
 
 
 Session = sessionmaker(bind=engine)
@@ -169,7 +169,7 @@ def submit():
     global hp 
     if request.method == 'POST':
         hp = request.form['hp']  # 'hp' 이름으로 전송된 데이터를 받음
-        print(f"받은 휴대폰 번호: {hp}")
+        print(f"휴대폰 번호: {hp}")
         return 'Success'
 
 
