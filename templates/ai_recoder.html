@@ -1,379 +1,340 @@
 <!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <title>캡스톤2</title>
-    <!-- 아이콘 설정 -->
-    <link rel="icon" type="image/x-icon" href="../static/img/favicon.png" />
-    <!-- Font Awesome icons (free version)-->
-    <script
-      src="https://use.fontawesome.com/releases/v6.3.0/js/all.js"
-      crossorigin="anonymous"
-    ></script>
-    <!-- Google fonts-->
-    <link
-      href="https://fonts.googleapis.com/css?family=Montserrat:400,700"
-      rel="stylesheet"
-      type="text/css"
-    />
-    <link
-      href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700"
-      rel="stylesheet"
-      type="text/css"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Dongle&family=Moirai+One&family=Nanum+Gothic:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <!-- Core theme CSS (includes Bootstrap)-->
-    <link href="../static/css/styles.css" rel="stylesheet" />
-    <script src="../static/js/scripts.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-    <style>
-      .col-lg-4 {
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+  <title>Studying Pose</title>
+  <!-- 아이콘 설정 -->
+  <!-- <link rel="icon" type="image/x-icon" href="../static/img/favicon.png" /> -->
+  <!-- Font Awesome icons (free version)-->
+  <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+  <!-- Google fonts-->
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet" type="text/css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Dongle&family=Moirai+One&family=Nanum+Gothic:wght@400;700&display=swap"
+    rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <!-- Core theme CSS (includes Bootstrap)-->
+  <link href="../static/css/styles.css" rel="stylesheet" />
+  <script src="../static/js/scripts.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <style>
+    .col-lg-4 {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      width: 100%;
+    }
+
+    .page-section {
+      width: 100%;
+      /* 원하는 이미지 너비 값으로 변경 */
+      height: auto;
+      /* 자동으로 높이 조정 */
+    }
+
+    .portfolio-item {
+      padding: 8px;
+      position: relative;
+    }
+
+    #timer {
+      display: inline-block;
+      width: 80px;
+      /* 각 숫자의 너비 */
+      height: 40px;
+      /* 각 숫자의 높이 */
+      font-size: 30px;
+      /* 원하는 폰트 크기 */
+      margin-right: 120px;
+      margin-bottom: 50px;
+    }
+
+    .timer-contant {
+      text-align: center;
+      margin-top: 20px;
+      padding: 50px;
+    }
+
+    .button {
+      display: flex;
+      align-items: center;
+    }
+
+    .button button {
+      margin: 10px;
+      /* 시작 버튼과 종료 버튼 간의 간격 설정 */
+      width: 90px;
+      /* 버튼의 넓이 조정 */
+      padding: 5px;
+      text-align: center;
+      /* 텍스트 가운데 정렬 */
+      background-color: #ffcc70;
+      font-size: 20px;
+    }
+
+    .button #pauseButton {
+      display: none;
+    }
+
+    @media (max-width: 767px) {
+      .col-lg-4.col-sm-6.mb-4 {
         display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        width: 100%;
-      }
-
-      .page-section {
-        width: 100%;
-        /* 원하는 이미지 너비 값으로 변경 */
-        height: auto;
-        /* 자동으로 높이 조정 */
-      }
-
-      .portfolio-item {
-        padding: 8px;
-        position: relative;
+        flex-direction: column;
       }
 
       #timer {
-        display: inline-block;
-        width: 80px;
-        /* 각 숫자의 너비 */
-        height: 40px;
-        /* 각 숫자의 높이 */
-        font-size: 30px;
-        /* 원하는 폰트 크기 */
-        margin-right: 120px;
-        margin-bottom: 50px;
+        margin-bottom: 15px;
       }
 
       .timer-contant {
         text-align: center;
         margin-top: 20px;
-        padding: 50px;
+        padding: 0px;
       }
 
-      .button {
-        display: flex;
-        align-items: center;
+      .portfolio-item {
+        position: relative;
       }
+    }
+  </style>
 
-      .button button {
-        margin: 10px; /* 시작 버튼과 종료 버튼 간의 간격 설정 */
-        width: 90px; /* 버튼의 넓이 조정 */
-        padding: 5px;
-        text-align: center; /* 텍스트 가운데 정렬 */
-        background-color: #ffcc70;
-        font-size: 20px;
-      }
+  <script type="text/javascript">
+    // 타이머 함수
+    let startTime = 0;
+    let timerInterval;
+    let elapsedTime = 0;
+    let pauseTime = 0;
+    let totalSecondsElapsed = 0; // 공부한 시간
+    let initial_timestamp = null; // 처음 시작 누른 시간
+    let end_timestamp = null; // 처음 종료 누른 시간
 
-      .button #pauseButton {
-        display: none;
-      }
+    function startTimer() {
+      if (!timerInterval) {
+        // 타이머가 실행 중인지 확인
+        if (pauseTime != 0) {
+          startTime = Date.now() - pauseTime;
+          pauseTime = 0;
+        } else {
+          startTime = Date.now();
 
-      @media (max-width: 767px) {
-        .col-lg-4.col-sm-6.mb-4 {
-          display: flex;
-          flex-direction: column;
+          //  처음 시작 누른 시간 저장
+          if (initial_timestamp == null) {
+            initial_timestamp = Date.now();
+            console.log(initial_timestamp);
+          }
         }
-
-        #timer {
-          margin-bottom: 15px;
-        }
-
-        .timer-contant {
-          text-align: center;
-          margin-top: 20px;
-          padding: 0px;
-        }
-
-        .portfolio-item {
-          position: relative;
-        }
+        timerInterval = setInterval(updateTimer, 10); // 타이머 간격을 밀리초 단위로 설정 (10ms)
       }
-    </style>
+    }
 
-    <script type="text/javascript">
-      // 타이머 함수
-      let startTime = 0;
-      let timerInterval;
-      let elapsedTime = 0;
-      let pauseTime = 0;
-      let totalSecondsElapsed = 0; // 공부한 시간
-      let initial_timestamp = null; // 처음 시작 누른 시간
-      let end_timestamp = null; // 처음 종료 누른 시간
+    function pauseTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      pauseTime = Date.now() - startTime; // 일시정지한 시점의 경과시간 저장
+    }
 
-      function startTimer() {
-        if (!timerInterval) {
-          // 타이머가 실행 중인지 확인
-          if (pauseTime != 0) {
-            startTime = Date.now() - pauseTime;
-            pauseTime = 0;
+    function resetTimer() {
+      //  처음 종료 누른 시간 저장
+      if (end_timestamp == null) {
+        end_timestamp = Date.now();
+        console.log(end_timestamp);
+      }
+
+      // AJAX를 사용하여 Flask에 POST 요청 보내기
+      let xhr = new XMLHttpRequest(); //HTTP요청 만들고 보냄
+      xhr.open("POST", "/ai_recoder", true);
+      xhr.setRequestHeader("Content-Type", "application/json"); // application/json은 JSON 형식의 데이터를 나타내기 위한 특정한 MIME 타입 중 하나
+      xhr.onreadystatechange = function () {
+        // 이벤트가 발생할 때마다 함수 호출
+        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+          //서버 통신 완료 && 상태 코드 200 확인
+          console.log("state 200"); // 응답 결과 출력
+        }
+      };
+
+      let dataToSend = {
+        studying_time: elapsedTime,
+        initial_timestamp: initial_timestamp,
+        end_timestamp: end_timestamp,
+      };
+      xhr.send(JSON.stringify(dataToSend)); //JSON 형태로 파이썬에 전송
+
+      clearInterval(timerInterval);
+      timerInterval = null;
+      // 이 변수들을 0으로 초기화 해야 리셋됨
+      startTime = 0;
+      elapsedTime = 0;
+      pauseTime = 0;
+      document.getElementById("timer").textContent = "00:00:00:00";
+
+      return false;
+    }
+
+    function updateTimer() {
+      let currentTime = Date.now();
+      elapsedTime = currentTime - startTime;
+
+      let totalSecondsElapsed = Math.floor(elapsedTime / 1000);
+
+      let hours = Math.floor(totalSecondsElapsed / 3600);
+      totalSecondsElapsed %= 3600;
+
+      let minutes = Math.floor(totalSecondsElapsed / 60);
+
+      let seconds = totalSecondsElapsed % 60;
+
+      let milliseconds = elapsedTime % 1000;
+
+      hours = padZero(hours);
+      minutes = padZero(minutes);
+      seconds = padZero(seconds);
+      milliseconds = padZero(milliseconds, true);
+
+      document.getElementById("timer").textContent =
+        hours + ":" + minutes + ":" + seconds + ":" + milliseconds;
+    }
+
+    function padZero(num, isMilliseconds) {
+      if (isMilliseconds) {
+        return num.toString().padStart(3, "0");
+      }
+
+      return num.toString().padStart(2, "0");
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      document
+        .getElementById("startButton")
+        .addEventListener("click", startTimer);
+      document
+        .getElementById("pauseButton")
+        .addEventListener("click", pauseTimer);
+      document
+        .getElementById("resetButton")
+        .addEventListener("click", function () {
+          pauseTimer(); // 타이머 일시정지
+          resetTimer();
+        }); // 타이머 초기화})
+    });
+
+    //  AJAX
+    $(document).ready(function () {
+      $("#startButton").click(function () {
+        setInterval(ajaxcall, 1000); // 시간을 줄이면 일시정지 시간 반영 잘 안됨
+      });
+    });
+
+    function ajaxcall() {
+      $.ajax({
+        url: "/update_stream",
+        type: "GET",
+        success: function (response) {
+          console.log("0");
+          $("#state").html(response.state_act); // 웹페이지 내용 업데이트
+          if (response.state_time) {
+            console.log("1");
+            if (!timerInterval) {
+              // 타이머가 실행 중이지 않은 경우에만 타이머 시작
+              startTimer();
+            }
           } else {
-            startTime = Date.now();
-
-            //  처음 시작 누른 시간 저장
-            if (initial_timestamp == null) {
-              initial_timestamp = Date.now();
-              console.log(initial_timestamp);
+            console.log("2");
+            if (timerInterval) {
+              pauseTimer();
             }
           }
-          timerInterval = setInterval(updateTimer, 10); // 타이머 간격을 밀리초 단위로 설정 (10ms)
-        }
-      }
-
-      function pauseTimer() {
-        clearInterval(timerInterval);
-        timerInterval = null;
-        pauseTime = Date.now() - startTime; // 일시정지한 시점의 경과시간 저장
-      }
-
-      function resetTimer() {
-        //  처음 종료 누른 시간 저장
-        if (end_timestamp == null) {
-          end_timestamp = Date.now();
-          console.log(end_timestamp);
-        }
-
-        // AJAX를 사용하여 Flask에 POST 요청 보내기
-        let xhr = new XMLHttpRequest(); //HTTP요청 만들고 보냄
-        xhr.open("POST", "/ai_recoder", true);
-        xhr.setRequestHeader("Content-Type", "application/json"); // application/json은 JSON 형식의 데이터를 나타내기 위한 특정한 MIME 타입 중 하나
-        xhr.onreadystatechange = function () {
-          // 이벤트가 발생할 때마다 함수 호출
-          if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-            //서버 통신 완료 && 상태 코드 200 확인
-            console.log("state 200"); // 응답 결과 출력
-          }
-        };
-
-        let dataToSend = {
-          studying_time: elapsedTime,
-          initial_timestamp: initial_timestamp,
-          end_timestamp: end_timestamp,
-        };
-        xhr.send(JSON.stringify(dataToSend)); //JSON 형태로 파이썬에 전송
-
-        clearInterval(timerInterval);
-        timerInterval = null;
-        // 이 변수들을 0으로 초기화 해야 리셋됨
-        startTime = 0;
-        elapsedTime = 0;
-        pauseTime = 0;
-        document.getElementById("timer").textContent = "00:00:00:00";
-
-        return false;
-      }
-
-      function updateTimer() {
-        let currentTime = Date.now();
-        elapsedTime = currentTime - startTime;
-
-        let totalSecondsElapsed = Math.floor(elapsedTime / 1000);
-
-        let hours = Math.floor(totalSecondsElapsed / 3600);
-        totalSecondsElapsed %= 3600;
-
-        let minutes = Math.floor(totalSecondsElapsed / 60);
-
-        let seconds = totalSecondsElapsed % 60;
-
-        let milliseconds = elapsedTime % 1000;
-
-        hours = padZero(hours);
-        minutes = padZero(minutes);
-        seconds = padZero(seconds);
-        milliseconds = padZero(milliseconds, true);
-
-        document.getElementById("timer").textContent =
-          hours + ":" + minutes + ":" + seconds + ":" + milliseconds;
-      }
-
-      function padZero(num, isMilliseconds) {
-        if (isMilliseconds) {
-          return num.toString().padStart(3, "0");
-        }
-
-        return num.toString().padStart(2, "0");
-      }
-
-      document.addEventListener("DOMContentLoaded", function () {
-        document
-          .getElementById("startButton")
-          .addEventListener("click", startTimer);
-        document
-          .getElementById("pauseButton")
-          .addEventListener("click", pauseTimer);
-        document
-          .getElementById("resetButton")
-          .addEventListener("click", function () {
-            pauseTimer(); // 타이머 일시정지
-            resetTimer();
-          }); // 타이머 초기화})
+        },
       });
+    }
+  </script>
+</head>
 
-      //  AJAX
-      $(document).ready(function () {
-        $("#startButton").click(function () {
-          setInterval(ajaxcall, 1000); // 시간을 줄이면 일시정지 시간 반영 잘 안됨
-        });
-      });
-
-      function ajaxcall() {
-        $.ajax({
-          url: "/update_stream",
-          type: "GET",
-          success: function (response) {
-            console.log("0");
-            $("#state").html(response.state_act); // 웹페이지 내용 업데이트
-            if (response.state_time) {
-              console.log("1");
-              if (!timerInterval) {
-                // 타이머가 실행 중이지 않은 경우에만 타이머 시작
-                startTimer();
-              }
-            } else {
-              console.log("2");
-              if (timerInterval) {
-                pauseTimer();
-              }
-            }
-          },
-        });
-      }
-    </script>
-  </head>
-
-  <body id="page-top">
-    <!-- Navigation-->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
-      <div class="container">
-        <a class="navbar-brand" href="/"
-          ><img src="../static/img/navbar-logo.png" alt="..."
-        /></a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarResponsive"
-          aria-controls="navbarResponsive"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          Menu
-          <i class="fas fa-bars ms-1"></i>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
-            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-            <li class="nav-item">
-              <a class="nav-link" href="/#services">Guide</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/ai_recoder">AI Recode</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/recode">Recode</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/recode_chart">Chart</a>
-            </li>
-          </ul>
-        </div>
+<body id="page-top">
+  <!-- Navigation-->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="/"><img src="../static/img/navbar-logo.png" alt="..." /></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
+        aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        Menu
+        <i class="fas fa-bars ms-1"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
+          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="/#services">Guide</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/ai_recoder">AI Recode</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/recode">Recode</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/recode_chart">Chart</a>
+          </li>
+        </ul>
       </div>
-    </nav>
+    </div>
+  </nav>
 
-    <div class="page-section-timer">
-      <section class="page-section bg-light" id="portfolio">
-        <div class="container">
-          <div class="text-center">
-            <h2 class="section-heading text-uppercase">AI recoder</h2>
-            <h3 class="section-subheading text-muted">
-              공부 자세를 취하면 자동으로 시작됩니다.
-            </h3>
-          </div>
-          <div class="row">
-            <div class="col-lg-4 col-sm-6 mb-4">
-              <div class="portfolio-item">
-                <a
-                  class="portfolio-link"
-                  data-bs-toggle="modal"
-                  href="#portfolioModal1"
-                >
-                  <!-- <div class="portfolio-hover">
+  <div class="page-section-timer">
+    <section class="page-section bg-light" id="portfolio">
+      <div class="container">
+        <div class="text-center">
+          <h2 class="section-heading text-uppercase">AI recoder</h2>
+          <h3 class="section-subheading text-muted">
+            공부 자세를 취하면 자동으로 시작됩니다.
+          </h3>
+        </div>
+        <div class="row">
+          <div class="col-lg-4 col-sm-6 mb-4">
+            <div class="portfolio-item">
+              <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal1">
+                <!-- <div class="portfolio-hover">
                                     <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x"></i></div>
                                 </div> -->
-                  <!-- jpg 형식으로 인코딩해서 img 요소 써야 함 -->
-                  <img
-                    id="videoFeed"
-                    src="{{ url_for('stream') }}"
-                    width="320"
-                    height="320"
-                  />
-                </a>
-                <div class="portfolio-caption">
-                  <div class="portfolio-caption-heading">상태 감지 중</div>
-                  <div
-                    id="state"
-                    class="portfolio-caption-subheading text-muted"
-                  ></div>
-                </div>
+                <!-- jpg 형식으로 인코딩해서 img 요소 써야 함 -->
+                <img id="videoFeed" src="{{ url_for('stream') }}" width="320" height="320" />
+              </a>
+              <div class="portfolio-caption">
+                <div class="portfolio-caption-heading">상태 감지 중</div>
+                <div id="state" class="portfolio-caption-subheading text-muted"></div>
               </div>
-              <script>
-                let myJslet = "{{ pause }}";
-                myJslet;
-              </script>
+            </div>
+            <script>
+              let myJslet = "{{ pause }}";
+              myJslet;
+            </script>
 
-              <div class="timer-contant">
-                <h1 id="timer">00:00:00:00</h1>
-                <div class="button">
-                  <button
-                    id="startButton"
-                    class="btn btn-primary btn-xl text-uppercase"
-                  >
-                    시작
-                  </button>
-                  <a href="/recode"
-                    ><button
-                      id="resetButton"
-                      class="btn btn-primary btn-xl text-uppercase"
-                    >
-                      종료
-                    </button></a
-                  >
-                  <button id="pauseButton" class="styled-button">
-                    일시정지
-                  </button>
-                </div>
+            <div class="timer-contant">
+              <h1 id="timer">00:00:00:00</h1>
+              <div class="button">
+                <button id="startButton" class="btn btn-primary btn-xl text-uppercase">
+                  시작
+                </button>
+                <a href="/recode"><button id="resetButton" class="btn btn-primary btn-xl text-uppercase">
+                    종료
+                  </button></a>
+                <button id="pauseButton" class="styled-button">
+                  일시정지
+                </button>
               </div>
             </div>
           </div>
         </div>
-      </section>
-    </div>
-  </body>
+      </div>
+    </section>
+  </div>
+</body>
+
 </html>

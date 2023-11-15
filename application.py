@@ -66,8 +66,8 @@ timeTable.__table__.create(bind=engine, checkfirst=True)
 # //카메라 처리 
 state = 0
 interval = 0  # 모델 predict 딜레이
-playing_stack  = 0 
 def stream_gen( src ):    
+    playing_stack  = 0 
     try :    
         streamer.run( src )   
         counter = 0  # 실행 횟수 
@@ -162,6 +162,12 @@ def timestamp_to_minutes(timestamp):
 @application.route('/')
 def index():
     return render_template('index.html')
+
+
+@application.route('/favicon.ico')
+def favicon():
+    return application.send_static_file('favicon.ico')
+
 
 hp = 0
 @application.route('/submit', methods=['POST'])
