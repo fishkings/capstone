@@ -25,12 +25,66 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
   <style>
+    body {
+      background-color: rgb(239, 247, 253);
+    }
+
+    img {
+      border-radius: 10px;
+    }
+
+
+    #state {
+      font-size: 1.5em;
+    }
+
+    #state.distracted {
+      color: rgb(227, 54, 57) !important;
+    }
+
     .col-lg-4 {
       display: flex;
       justify-content: center;
       align-items: center;
       text-align: center;
       width: 100%;
+    }
+
+    .text-center {
+      padding-top: 0vh;
+    }
+
+    .portfolio-link {
+      border-radius: 10px;
+    }
+
+    .image-wrapper {
+      overflow: hidden;
+      border-radius: 10px;
+      /* 원하는 border-radius 값 설정 */
+    }
+
+    #portfolio .portfolio-item {
+      margin-right: 60px;
+      margin-left: 100px;
+    }
+
+    #portfolio .portfolio-item .portfolio-caption {
+      background-color: rgb(235, 215, 177);
+      margin-top: 2px;
+      border-radius: 10px;
+    }
+
+    #portfolio .portfolio-item .portfolio-caption .portfolio-caption-heading {
+      font-size: 1.2em;
+    }
+
+    .portfolio-caption-heading {
+      color: #6c757d;
+    }
+
+    .page-section h3.section-subheading {
+      font-size: 19px;
     }
 
     .page-section {
@@ -46,21 +100,24 @@
     }
 
     #timer {
-      display: inline-block;
-      width: 80px;
-      /* 각 숫자의 너비 */
-      height: 40px;
-      /* 각 숫자의 높이 */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 120px;
+      height: 60px;
       font-size: 30px;
-      /* 원하는 폰트 크기 */
-      margin-right: 120px;
+      margin: 0 auto;
+      font-family: "Arvo";
+      /* 가운데 정렬을 위해 margin을 수정 */
       margin-bottom: 50px;
     }
 
     .timer-contant {
       text-align: center;
-      margin-top: 20px;
-      padding: 50px;
+      margin-top: 10px;
+      padding: 10px 0;
+      height: 120px;
+
     }
 
     .button {
@@ -76,7 +133,7 @@
       padding: 5px;
       text-align: center;
       /* 텍스트 가운데 정렬 */
-      background-color: #ffcc70;
+      background-color: #ffd383;
       font-size: 20px;
     }
 
@@ -85,6 +142,11 @@
     }
 
     @media (max-width: 767px) {
+
+      .text-center {
+        padding-top: 4vh;
+      }
+
       .col-lg-4.col-sm-6.mb-4 {
         display: flex;
         flex-direction: column;
@@ -98,6 +160,7 @@
         text-align: center;
         margin-top: 20px;
         padding: 0px;
+        margin-left: 50px;
       }
 
       .portfolio-item {
@@ -107,6 +170,17 @@
   </style>
 
   <script type="text/javascript">
+
+    // 시작 버튼 누르면 기본 메세지 사라짐
+    document.addEventListener("DOMContentLoaded", function () {
+      var startButton = document.getElementById("startButton");
+      if (startButton) {
+        startButton.addEventListener("click", function () {
+          document.getElementsByClassName("portfolio-caption-heading")[0].style.display = "none";
+        });
+      }
+    });
+
     // 타이머 함수
     let startTime = 0;
     let timerInterval;
@@ -237,8 +311,19 @@
         url: "/update_stream",
         type: "GET",
         success: function (response) {
-          console.log("0");
+
           $("#state").html(response.state_act); // 웹페이지 내용 업데이트
+          let stateElement = $("#state");
+          stateElement.html(response.state_act);
+
+          if (response.state_act === "딴 짓 하는 중 ...") {
+            console.log("yq")
+            stateElement.addClass("distracted");
+          } else {
+            stateElement.removeClass("distracted");
+          }
+
+
           if (response.state_time) {
             console.log("1");
             if (!timerInterval) {
@@ -254,7 +339,10 @@
         },
       });
     }
+
+
   </script>
+
 </head>
 
 <body id="page-top">
@@ -288,12 +376,12 @@
   </nav>
 
   <div class="page-section-timer">
-    <section class="page-section bg-light" id="portfolio">
+    <section class="page-section" id="portfolio">
       <div class="container">
         <div class="text-center">
           <h2 class="section-heading text-uppercase">AI recoder</h2>
           <h3 class="section-subheading text-muted">
-            공부 자세를 취하면 자동으로 시작됩니다.
+            학습 종료를 원하시면 종료 버튼을 눌러주세요.
           </h3>
         </div>
         <div class="row">
@@ -307,7 +395,10 @@
                 <img id="videoFeed" src="{{ url_for('stream') }}" width="320" height="320" />
               </a>
               <div class="portfolio-caption">
-                <div class="portfolio-caption-heading">상태 감지 중</div>
+                <div class="portfolio-caption-heading">
+                  올바른 자세로 <br>
+                  시작을 눌러주세요
+                </div>
                 <div id="state" class="portfolio-caption-subheading text-muted"></div>
               </div>
             </div>

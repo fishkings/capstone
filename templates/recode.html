@@ -29,6 +29,24 @@
 
 
 <style>
+    .text-center {
+        padding-top: 10px
+    }
+
+    .col-lg-4.col-sm-6.mb-4 {
+        margin-top: 30px !important;
+        margin-bottom: 0 !important;
+    }
+
+    .page-section h2.section-heading,
+    .page-section .section-heading.h2 {
+        font-size: 3rem;
+    }
+
+    .col-lg-4.col-sm-6.mb-4:first-child {
+        margin-top: 20px;
+    }
+
     .col-lg-4.col-sm-6.mb-4 {
         padding: 1px;
         width: 33.3%;
@@ -42,6 +60,8 @@
         background-repeat: no-repeat;
         background-size: 100px 100px;
         background-position: center center;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
     }
 
     #portfolio .row>div:nth-child(1) .img-fluid {
@@ -62,6 +82,7 @@
         max-width: 12rem;
         margin-left: auto;
         margin-right: auto;
+        border-radius: 1000px;
     }
 
     #portfolio .portfolio-item .portfolio-link {
@@ -98,6 +119,9 @@
         padding: 0px;
         text-align: center;
         background-color: #fff;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        background-color: rgb(0, 32, 74, .8);
     }
 
     #portfolio .portfolio-item .portfolio-caption .portfolio-caption-heading {
@@ -105,9 +129,10 @@
         font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
         font-weight: 700;
         margin-bottom: 0;
+        color: #ffcc70
     }
 
-    #portfolio .portfolio-item .portfolio-caption .portfolio-caption-subheading {
+    #portfolio .portfolio-item .portfolio-caption .portfolio-caption-subheading.text-muted {
         font-style: italic;
         font-family: "Roboto Slab", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     }
@@ -126,7 +151,8 @@
         padding: 10px;
         text-align: center;
         /* 텍스트 가운데 정렬 */
-        background-color: #ffcc70;
+        background-color: #ffc800;
+        ;
         font-size: 20px;
     }
 

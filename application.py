@@ -224,10 +224,10 @@ def stream():
 @application.route('/update_stream')
 def update():
     if state : 
-        state_act = "공부 중"
+        state_act = "공부 하는 중!"
         state_time = 1        
     else : 
-        state_act = "딴짓 중"
+        state_act = "딴 짓 하는 중 ..."
         state_time = 0
     return jsonify({'state_act': state_act,'state_time':state_time}) # 이렇게도 가능...
 
