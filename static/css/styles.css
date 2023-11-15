@@ -12710,7 +12710,7 @@ p {
 }
 
 #mainNav .navbar-brand img {
-  height: 3rem;
+  height: 5rem;
 }
 
 #mainNav .navbar-nav .nav-item .nav-link {
@@ -12740,7 +12740,7 @@ p {
   }
 
   #mainNav .navbar-brand img {
-    height: 2rem;
+    height: 4rem;
     transition: height 0.3s ease-in-out;
   }
 
@@ -12756,7 +12756,7 @@ p {
 
   #mainNav.navbar-shrink .navbar-brand svg,
   #mainNav.navbar-shrink .navbar-brand img {
-    height: 2.2rem;
+    height: 3.2rem;
   }
 
   #mainNav .navbar-nav .nav-item {
@@ -12775,7 +12775,7 @@ header.masthead {
   padding-bottom: 6rem;
   height: 100vh;
   text-align: center;
-  color: #FFC000;
+  color: #FDC467;
   position: relative;
   background-repeat: no-repeat;
   background-attachment: scroll;
