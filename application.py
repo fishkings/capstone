@@ -224,7 +224,7 @@ def stream():
 @application.route('/update_stream')
 def update():
     if state : 
-        state_act = "공부 하는 중!"
+        state_act = "공부 하는 중!!"
         state_time = 1        
     else : 
         state_act = "딴 짓 하는 중 ..."

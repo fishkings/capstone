@@ -4196,6 +4196,16 @@ fieldset:disabled .btn {
     border-color 0.15s ease-in-out;
 }
 
+@media (min-width: 992px) {
+  #mainNav .navbar-nav .nav-item .nav-link.y_0 {
+    color: rgb(0, 32, 74);
+  }
+
+  #mainNav .navbar-nav .nav-item .nav-link:hover {
+    color: #ebd8b6;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .nav-link {
     transition: none;
@@ -12706,6 +12716,12 @@ fieldset:disabled .btn {
   }
 }
 
+@media (max-width: 992px) {
+  #mainNav .navbar-nav .nav-item .nav-link:hover {
+    color: #fff4cc;
+  }
+}
+
 @media (min-width: 1200px) {
   .fs-1 {
     font-size: 2.5rem !important;
@@ -12871,7 +12887,7 @@ p {
 
 #mainNav .navbar-nav .nav-item .nav-link.active,
 #mainNav .navbar-nav .nav-item .nav-link:hover {
-  color: rgb(249, 134, 7);
+  color: FFC000;
 }
 
 @media (min-width: 992px) {

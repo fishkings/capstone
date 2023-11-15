@@ -11,7 +11,7 @@ window.addEventListener('DOMContentLoaded', event => {
 
             const navLinks = document.querySelectorAll(".nav-link");
             navLinks.forEach(function (navLink) {
-                navLink.style.color = "rgb(43, 79, 128)";
+                navLink.classList.add("y_0");
             });
 
 
@@ -19,7 +19,7 @@ window.addEventListener('DOMContentLoaded', event => {
             navbarCollapsible.classList.add('navbar-shrink');
             const navLinks = document.querySelectorAll(".nav-link");
             navLinks.forEach(function (navLink) {
-                navLink.style.color = "#FFCC70";
+                navLink.classList.remove("y_0");
             });
         }
 
