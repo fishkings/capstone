@@ -86,8 +86,9 @@
     width: 80px;
     margin-left: 5px;
     border-radius: 10px;
-    color: #6c757d;
-    background-color: rgba(34, 102, 141, 0.9);
+    border-color: rgb(43, 79, 128);
+    color: #FFCC70;
+    background-color: rgb(43, 79, 128);
   }
 
   .form-section-hp {
@@ -96,26 +97,27 @@
     font-weight: 800;
     text-align: center;
     border-radius: 10px;
-    border-color: rgba(34, 102, 141);
-    color: #6c757d;
-    background-color: rgba(34, 102, 141);
+    color: #FFCC70;
+    border-color: rgb(43, 79, 128);
+    background-color: rgb(43, 79, 128);
+
   }
 
   .form-section-hp:hover {
-    background-color: rgb(12, 43, 61, 0.8);
+    background-color: #22668d;
   }
 
   #myForm .btn.btn-primary.btn-xl:hover {
-    background-color: rgba(12, 43, 61, 0.7);
+    background-color: #22668d;
   }
 
   .form-section-hp:focus {
-    color: rgba(34, 102, 141, 0.7);
-    background-color: #FFCC70;
+    color: rgb(43, 79, 128);
+    background-color: rgba(255, 204, 112, .8);
   }
 
   .form-section-hp::-webkit-input-placeholder {
-    color: #6c757d;
+    color: #bdc6ce;
   }
 </style>
 
@@ -182,15 +184,30 @@
         <div class="col-md-4">
           <span class="fa-stack fa-4x">
             <i class="fas fa-circle fa-stack-2x text-primary"></i>
-            <i class="fas fa-video fa-stack-1x fa-inverse"></i>
+            <i class="fas fa-mobile-screen-button fa-stack-1x fa-inverse"></i>
           </span>
           <h4 class="my-3">1 STEP</h4>
           <p class="text-muted">
-            연결된 카메라 접근을 허용 후 <br />
-            올바른 공부 자세를 취함<br />
-            Recoder가 공부 자세를 <br />
-            감지하면,자동으로 타이머가 <br />
-            시작되어 공부 시간을 측정
+            알림을 받고 싶은 <br />
+            핸드폰 번호를 입력해주세요.<br />
+            번호 입력시에 "-"없이 <br />
+            숫자만 입력해줍니다. <br />
+
+          </p>
+        </div>
+        <div class="col-md-4">
+          <span class="fa-stack fa-4x">
+            <i class="fas fa-circle fa-stack-2x text-primary"></i>
+            <!-- <i class="fas fa-video fa-stack-1x fa-inverse"></i> -->
+            <i class="fas fa-street-view fa-stack-1x fa-inverse"></i>
+          </span>
+          <h4 class="my-3">2 STEP</h4>
+          <p class="text-muted">
+            카메라를 연결한 후에 <br />
+            올바른 공부 자세를 취해주세요.<br />
+            (정면 자세를 권장드립니다.)<br />
+            한번 시작을 누르면 <br />
+            자동으로 상태 시간을 측정해줍니다.
           </p>
         </div>
         <div class="col-md-4">
@@ -198,13 +215,13 @@
             <i class="fas fa-circle fa-stack-2x text-primary"></i>
             <i class="fas fa-bell fa-stack-1x fa-inverse"></i>
           </span>
-          <h4 class="my-3">2 STEP</h4>
+          <h4 class="my-3">3 STEP</h4>
           <p class="text-muted">
-            딴 짓하는 상태가 <br />
-            일정 시간 이상 지속될 경우<br />
-            Recoder는 타이머를 멈춤 <br />
-            이후 학습자에게 SMS를 통해 <br />
-            특정 상태를 보고
+            딴 짓하는 상태가 감지되면 <br />
+            Recoder는 타이머를 멈춥니다. <br />
+            이 상태가 계속 반복 될 경우, <br />
+            저장된 번호에 문자를 보내서 <br />
+            특정 상태를 보고합니다.
           </p>
         </div>
         <div class="col-md-4">
@@ -212,12 +229,13 @@
             <i class="fas fa-circle fa-stack-2x text-primary"></i>
             <i class="fas fa-chart-simple fa-stack-1x fa-inverse"></i>
           </span>
-          <h4 class="my-3">3 STEP</h4>
+          <h4 class="my-3">4 STEP</h4>
           <p class="text-muted">
-            총 기록된 공부 시간은 <br />
-            매주 누적 기록이 되어<br />
-            순 공부량 그래프로 나타남<br />
-            학습자는 자가 피드백을 함<br />
+            학습이 끝나면 종료 버튼을 누릅니다. <br />
+            전체,공부,딴짓 시간이 기록되고 <br />
+            기록은 시간 단위로 누적이 됩니다. <br />
+            누적된 값은 학습 그래프로 나타내어<br />
+            학습자가 자가 피드백을 할 수 있습니다.<br />
           </p>
         </div>
       </div>
