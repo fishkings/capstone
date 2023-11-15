@@ -12801,6 +12801,8 @@ p {
 
 .page-section h2.section-heading,
 .page-section .section-heading.h2 {
+  -webkit-text-stroke-width: 0.7px;
+  -webkit-text-stroke-color: #212529;
   font-size: 5.5rem;
   margin-top: 50px;
   margin-bottom: 1rem;
