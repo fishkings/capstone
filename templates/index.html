@@ -99,9 +99,9 @@
     width: 80px;
     margin-left: 5px;
     border-radius: 10px;
-    border-color: rgb(43, 79, 128);
+    border-color: rgb(68, 127, 210);
     color: #FFCC70;
-    background-color: rgb(43, 79, 128);
+    background-color: rgb(68, 127, 210, .8);
   }
 
   .form-section-hp {
@@ -111,8 +111,8 @@
     text-align: center;
     border-radius: 10px;
     color: #FFCC70;
-    border-color: rgb(43, 79, 128);
-    background-color: rgb(43, 79, 128);
+    border-color: rgb(68, 127, 210);
+    background-color: rgb(68, 127, 210, .8);
 
   }
 
@@ -176,7 +176,8 @@
       </div>
       <div id="form-section">
         <form action="/submit" method="POST" id="myForm" onsubmit="return submitForm(event)">
-          <input class="form-section-hp" placeholder="01012341234 (숫자만 입력)" type="text" id="hp" name="hp" /><br /><br />
+          <input class="form-section-hp" placeholder="H.P(숫자만) : 01012341234 " type="text" id="hp"
+            name="hp" /><br /><br />
           <input class="btn btn-primary btn-xl text-uppercase" type="submit" value="Save" />
         </form>
       </div>

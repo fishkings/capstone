@@ -26,6 +26,21 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
+
+<style>
+  .page-section h2.section-heading,
+  .page-section .section-heading.h2 {
+    font-size: 3rem;
+    margin-top: 20px;
+  }
+
+  .page-section h3.section-subheading,
+  .page-section .section-subheading.h3 {
+    font-size: 1.2rem;
+  }
+</style>
+
+
 <body id="page-top">
   <!-- Navigation-->
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
@@ -57,12 +72,12 @@
   </nav>
 
   <div class="page-section-timer">
-    <section class="page-section bg-light" id="portfolio">
+    <section class="page-section" id="portfolio">
       <div class="container">
         <div class="text-center">
           <h2 class="section-heading text-uppercase">Study Visualization</h2>
           <h3 class="section-subheading text-muted">
-            최근 7일간 공부량을 보여줍니다.
+            1시간 단위로 공부량을 보여줍니다.
           </h3>
           <canvas id="myChart"></canvas>
 
