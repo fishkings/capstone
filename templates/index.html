@@ -43,6 +43,7 @@
       if (xhr.readyState === 4 && xhr.status === 200) {
         // 전송 완료 후 Get Start 버튼 보이기
         document.getElementById("form-section").style.display = "none";
+        document.getElementsByClassName("form-guide")[0].style.display = "none"
         document.getElementById("get-start-section").style.display = "block";
       }
     };
@@ -83,6 +84,13 @@
 
   .page-section .text-center {
     padding-top: 10px;
+  }
+
+  .form-guide {
+    margin-top: 10px;
+    color: rgb(209, 74, 74);
+    font-size: 17px;
+    font-weight: 800;
   }
 
   #form-section {
@@ -184,19 +192,19 @@
   </nav>
   <header class="masthead">
     <div class="container">
-      <div class="masthead-subheading">Capstone</div>
+      <div class="masthead-subheading">Capstone II</div>
       <div class="masthead-heading text-uppercase">
         Studying Pose
-        <p>AI</p>
-        Recorder
+        <!-- <p>AI</p>
+        Recorder -->
       </div>
       <div id="form-section">
         <form action="/submit" method="POST" id="myForm" onsubmit="return submitForm(event)">
-          <input class="form-section-hp" placeholder="H.P(숫자만) : 01012341234 " type="text" id="hp"
-            name="hp" /><br /><br />
+          <input class="form-section-hp" placeholder=" EX) 01012341234 " type="text" id="hp" name="hp" /><br /><br />
           <input class="btn btn-primary btn-xl text-uppercase" type="submit" value="Save" />
         </form>
       </div>
+      <div class="form-guide"><b>알림을 받고 싶은 번호를 위의 예시처럼 입력해주세요.</div>
       <div id="get-start-section" style="display: none">
         <a class="btn btn-primary btn-xl text-uppercase" href="/ai_recoder">Get Start</a>
       </div>
